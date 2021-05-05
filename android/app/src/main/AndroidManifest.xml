@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.medium_unlimited">
+    package="com.medium.unlimited">
    <application
-        android:label="medium_unlimited"
+        android:label="Medium Unlimited"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

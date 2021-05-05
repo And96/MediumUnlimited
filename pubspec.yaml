@@ -1,5 +1,5 @@
 name: medium_unlimited
-description: Read medium.com without limitation
+description: 'Read medium.com without limitation'
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -34,6 +34,8 @@ dev_dependencies:
     sdk: flutter
 
   flutter_launcher_icons: "^0.9.0"
+
+  change_app_package_name: ^1.0.0
 
 flutter_icons:
   android: true
