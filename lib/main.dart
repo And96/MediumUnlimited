@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         // Define the default brightness and colors.
         brightness: Brightness.dark,
-        primaryColor: Colors.grey[800],
+        primaryColor: Colors.grey[900],
         accentColor: Colors.black,
       ),
       home: Scaffold(
@@ -95,8 +95,9 @@ class _MyAppState extends State<MyApp> {
                     onTap: () {
                       webViewController?.clearCache();
                       webViewController?.loadUrl(
-                          urlRequest:
-                              URLRequest(url: Uri.parse("https://medium.com")));
+                          urlRequest: URLRequest(
+                              url: Uri.parse(
+                                  "https://medium.com/topic/popular")));
                     },
                     child: Text("Medium Unlimited"))),
             actions: <Widget>[
@@ -154,15 +155,17 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   InAppWebView(
                     key: webViewKey,
-                    initialUrlRequest:
-                        URLRequest(url: Uri.parse("https://medium.com")),
+                    initialUrlRequest: URLRequest(
+                        url: Uri.parse("https://medium.com/topic/popular")),
                     initialOptions: options,
                     pullToRefreshController: pullToRefreshController,
                     onWebViewCreated: (controller) {
                       webViewController = controller;
                     },
                     onLoadStart: (controller, url) {
-                      webViewController?.clearCache();
+                      controller.clearCache();
+                      final cookieManager = CookieManager();
+                      cookieManager.deleteAllCookies();
                       setState(() {
                         this.url = url.toString();
                         urlController.text = this.url;
@@ -176,6 +179,7 @@ class _MyAppState extends State<MyApp> {
                     },
                     shouldOverrideUrlLoading:
                         (controller, navigationAction) async {
+                      controller.clearCache();
                       var uri = navigationAction.request.url!;
 
                       if (![
