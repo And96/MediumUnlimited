@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
   final urlController = TextEditingController();
 
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
-    print("BACK BUTTON!"); // Do some stuff.
+    webViewController?.stopLoading();
     webViewController?.clearCache();
     webViewController?.goBack();
     return true;
@@ -59,9 +59,11 @@ class _MyAppState extends State<MyApp> {
 
     pullToRefreshController = PullToRefreshController(
       options: PullToRefreshOptions(
-        color: Colors.green,
+        color: Colors.grey,
       ),
       onRefresh: () async {
+        webViewController?.stopLoading();
+        webViewController?.clearCache();
         if (Platform.isAndroid) {
           webViewController?.reload();
         } else if (Platform.isIOS) {
@@ -93,6 +95,7 @@ class _MyAppState extends State<MyApp> {
                 padding: EdgeInsets.only(right: 0.0),
                 child: GestureDetector(
                     onTap: () {
+                      webViewController?.stopLoading();
                       webViewController?.clearCache();
                       webViewController?.loadUrl(
                           urlRequest: URLRequest(
@@ -105,6 +108,7 @@ class _MyAppState extends State<MyApp> {
                   padding: EdgeInsets.only(right: 20.0),
                   child: GestureDetector(
                     onTap: () {
+                      webViewController?.stopLoading();
                       webViewController?.clearCache();
                       webViewController?.goBack();
                     },
@@ -116,6 +120,7 @@ class _MyAppState extends State<MyApp> {
                   padding: EdgeInsets.only(right: 20.0),
                   child: GestureDetector(
                     onTap: () {
+                      webViewController?.stopLoading();
                       webViewController?.clearCache();
                       webViewController?.goForward();
                     },
@@ -127,6 +132,7 @@ class _MyAppState extends State<MyApp> {
                   padding: EdgeInsets.only(right: 20.0),
                   child: GestureDetector(
                     onTap: () {
+                      webViewController?.stopLoading();
                       webViewController?.clearCache();
                       webViewController?.reload();
                     },
@@ -204,6 +210,9 @@ class _MyAppState extends State<MyApp> {
                       return NavigationActionPolicy.ALLOW;
                     },
                     onLoadStop: (controller, url) async {
+                      controller.clearCache();
+                      final cookieManager = CookieManager();
+                      cookieManager.deleteAllCookies();
                       pullToRefreshController.endRefreshing();
                       setState(() {
                         this.url = url.toString();
@@ -214,7 +223,7 @@ class _MyAppState extends State<MyApp> {
                       pullToRefreshController.endRefreshing();
                     },
                     onProgressChanged: (controller, progress) {
-                      if (progress == 100) {
+                      if (progress >= 100) {
                         pullToRefreshController.endRefreshing();
                       }
                       setState(() {
