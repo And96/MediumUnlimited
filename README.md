@@ -15,3 +15,6 @@ flutter packages pub run flutter_launcher_icons:main
 flutter pub run change_app_package_name:main com.medium.unlimited
 flutter build apk
 ```
+
+## Download
+[Latest APK here](https://github.com/And96/MediumUnlimited/releases/latest)
