@@ -3,7 +3,10 @@
 An Android application written with Flutter/Dart to read medium.com without limitations. 
 
 ## Status
-Work in progress
+Beta
+
+## Screenshot
+<img src="https://raw.githubusercontent.com/And96/MediumUnlimited/main/docs/Screenshot_1.jpg" width="340" height="720">
 
 ## How to build
 ```
