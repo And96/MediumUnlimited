@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
       crossPlatform: InAppWebViewOptions(
         useShouldOverrideUrlLoading: true,
-        mediaPlaybackRequiresUserGesture: false,
+        mediaPlaybackRequiresUserGesture: true,
         cacheEnabled: false,
         incognito: true,
         clearCache: true,
@@ -78,6 +78,50 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     BackButtonInterceptor.remove(myInterceptor);
     super.dispose();
+  }
+
+  void removeElements(InAppWebViewController controller) {
+    try {
+      controller.evaluateJavascript(
+          source:
+              'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });');
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("lo-highlight-meter-1-copy").style.display = "none";');
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("lo-highlight-meter-2-copy").style.display = "none";');
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("lo-highlight-meter-3-copy").style.display = "none";');
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("lo-highlight-meter-1-highlight-box").style.display = "none";');
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("lo-highlight-meter-2-highlight-box").style.display = "none";');
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("lo-highlight-meter-3-highlight-box").style.display = "none";');
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("cv cw cx cy aj cz da s").style.display = "none";');
+      controller.evaluateJavascript(
+          source:
+              'document.getElementsByClassName("branch-journeys-top").item(0).style.display = "none";');
+
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("lo-highlight-meter-1-link").style.display = "none";');
+
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("lo-highlight-meter-2-link").style.display = "none";');
+
+      controller.evaluateJavascript(
+          source:
+              'document.getElementById("lo-highlight-meter-3-link").style.display = "none";');
+    } catch (e) {}
   }
 
   @override
@@ -167,11 +211,15 @@ class _MyAppState extends State<MyApp> {
                     pullToRefreshController: pullToRefreshController,
                     onWebViewCreated: (controller) {
                       webViewController = controller;
+                      removeElements(controller);
+                    },
+                    onTitleChanged: (controller, title) {
+                      controller.clearCache();
+                      webViewController?.clearCache();
+                      removeElements(controller);
                     },
                     onLoadStart: (controller, url) {
-                      controller.clearCache();
-                      final cookieManager = CookieManager();
-                      cookieManager.deleteAllCookies();
+                      removeElements(controller);
                       setState(() {
                         this.url = url.toString();
                         urlController.text = this.url;
@@ -186,6 +234,7 @@ class _MyAppState extends State<MyApp> {
                     shouldOverrideUrlLoading:
                         (controller, navigationAction) async {
                       controller.clearCache();
+                      removeElements(controller);
                       var uri = navigationAction.request.url!;
 
                       if (![
@@ -210,9 +259,10 @@ class _MyAppState extends State<MyApp> {
                       return NavigationActionPolicy.ALLOW;
                     },
                     onLoadStop: (controller, url) async {
-                      controller.clearCache();
-                      final cookieManager = CookieManager();
-                      cookieManager.deleteAllCookies();
+                      removeElements(controller);
+                      //controller.clearCache();
+                      //final cookieManager = CookieManager();
+                      //cookieManager.deleteAllCookies();
                       pullToRefreshController.endRefreshing();
                       setState(() {
                         this.url = url.toString();
@@ -225,6 +275,10 @@ class _MyAppState extends State<MyApp> {
                     onProgressChanged: (controller, progress) {
                       if (progress >= 100) {
                         pullToRefreshController.endRefreshing();
+                        removeElements(controller);
+                      }
+                      if (progress >= 60 && progress <= 80) {
+                        removeElements(controller);
                       }
                       setState(() {
                         this.progress = progress / 100;
