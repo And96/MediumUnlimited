@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,10 +41,13 @@ class _MyAppState extends State<MyApp> {
       ));
 
   late PullToRefreshController pullToRefreshController;
-  String url = "";
+  String url = "https://medium.com/topic/popular";
   double progress = 0;
   final urlController = TextEditingController();
 
+  String? _sharedText = '';
+
+  late StreamSubscription _intentDataStreamSubscription;
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
     webViewController?.stopLoading();
     webViewController?.clearCache();
@@ -72,15 +76,43 @@ class _MyAppState extends State<MyApp> {
         }
       },
     );
+
+    // For sharing or opening urls/text coming from outside the app while the app is in the memory
+    _intentDataStreamSubscription =
+        ReceiveSharingIntent.getTextStream().listen((String value) {
+      setState(() {
+        _sharedText = value;
+        if (_sharedText != null && _sharedText.toString().length > 5) {
+          url = _sharedText.toString();
+          webViewController?.loadUrl(
+              urlRequest: URLRequest(url: Uri.parse(url)));
+        }
+      });
+    }, onError: (err) {
+      print("getLinkStream error: $err");
+    });
+
+    // For sharing or opening urls/text coming from outside the app while the app is closed
+    ReceiveSharingIntent.getInitialText().then((String? value) {
+      setState(() {
+        _sharedText = value;
+        if (_sharedText != null && _sharedText.toString().length > 5) {
+          url = _sharedText.toString();
+          webViewController?.loadUrl(
+              urlRequest: URLRequest(url: Uri.parse(url)));
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
     BackButtonInterceptor.remove(myInterceptor);
+    _intentDataStreamSubscription.cancel();
     super.dispose();
   }
 
-  void removeElements(InAppWebViewController controller) {
+  void removeElements(InAppWebViewController? controller) {
     try {
       List<String> jsCode = [
         'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });',
@@ -97,7 +129,7 @@ class _MyAppState extends State<MyApp> {
         'document.getElementById("lo-highlight-meter-3-link").style.display = "none";'
       ];
       jsCode.forEach((String js) {
-        controller.evaluateJavascript(source: js);
+        controller?.evaluateJavascript(source: js);
       });
     } catch (e) {}
   }
@@ -183,16 +215,19 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   InAppWebView(
                     key: webViewKey,
-                    initialUrlRequest: URLRequest(
-                        url: Uri.parse("https://medium.com/topic/popular")),
+                    initialUrlRequest: URLRequest(url: Uri.parse(url)),
                     initialOptions: options,
                     pullToRefreshController: pullToRefreshController,
                     onWebViewCreated: (controller) {
                       webViewController = controller;
-                      removeElements(controller);
+                      if (webViewController != null) {
+                        removeElements(controller);
+                      }
                     },
                     onLoadStart: (controller, url) {
-                      removeElements(controller);
+                      if (webViewController != null) {
+                        removeElements(controller);
+                      }
                       setState(() {
                         this.url = url.toString();
                         urlController.text = this.url;
@@ -241,11 +276,15 @@ class _MyAppState extends State<MyApp> {
                     },
                     onProgressChanged: (controller, progress) {
                       if (progress >= 65 && progress <= 75) {
-                        removeElements(controller);
+                        if (webViewController != null) {
+                          removeElements(controller);
+                        }
                       }
                       if (progress >= 100) {
                         pullToRefreshController.endRefreshing();
-                        removeElements(controller);
+                        if (webViewController != null) {
+                          removeElements(controller);
+                        }
                       }
                       setState(() {
                         this.progress = progress / 100;
