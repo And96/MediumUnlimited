@@ -82,45 +82,23 @@ class _MyAppState extends State<MyApp> {
 
   void removeElements(InAppWebViewController controller) {
     try {
-      controller.evaluateJavascript(
-          source:
-              'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });');
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("lo-highlight-meter-1-copy").style.display = "none";');
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("lo-highlight-meter-2-copy").style.display = "none";');
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("lo-highlight-meter-3-copy").style.display = "none";');
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("lo-highlight-meter-1-highlight-box").style.display = "none";');
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("lo-highlight-meter-2-highlight-box").style.display = "none";');
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("lo-highlight-meter-3-highlight-box").style.display = "none";');
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("cv cw cx cy aj cz da s").style.display = "none";');
-      controller.evaluateJavascript(
-          source:
-              'document.getElementsByClassName("branch-journeys-top").item(0).style.display = "none";');
-
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("lo-highlight-meter-1-link").style.display = "none";');
-
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("lo-highlight-meter-2-link").style.display = "none";');
-
-      controller.evaluateJavascript(
-          source:
-              'document.getElementById("lo-highlight-meter-3-link").style.display = "none";');
+      List<String> jsCode = [
+        'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });',
+        'document.getElementById("lo-highlight-meter-1-copy").style.display = "none";',
+        'document.getElementById("lo-highlight-meter-2-copy").style.display = "none";',
+        'document.getElementById("lo-highlight-meter-3-copy").style.display = "none";',
+        'document.getElementById("lo-highlight-meter-1-highlight-box").style.display = "none";',
+        'document.getElementById("lo-highlight-meter-2-highlight-box").style.display = "none";',
+        'document.getElementById("lo-highlight-meter-3-highlight-box").style.display = "none";',
+        'document.getElementById("cv cw cx cy aj cz da s").style.display = "none";',
+        'document.getElementsByClassName("branch-journeys-top").item(0).style.display = "none";',
+        'document.getElementById("lo-highlight-meter-1-link").style.display = "none";',
+        'document.getElementById("lo-highlight-meter-2-link").style.display = "none";',
+        'document.getElementById("lo-highlight-meter-3-link").style.display = "none";'
+      ];
+      jsCode.forEach((String js) {
+        controller.evaluateJavascript(source: js);
+      });
     } catch (e) {}
   }
 
@@ -213,11 +191,6 @@ class _MyAppState extends State<MyApp> {
                       webViewController = controller;
                       removeElements(controller);
                     },
-                    onTitleChanged: (controller, title) {
-                      controller.clearCache();
-                      webViewController?.clearCache();
-                      removeElements(controller);
-                    },
                     onLoadStart: (controller, url) {
                       removeElements(controller);
                       setState(() {
@@ -233,8 +206,6 @@ class _MyAppState extends State<MyApp> {
                     },
                     shouldOverrideUrlLoading:
                         (controller, navigationAction) async {
-                      controller.clearCache();
-                      removeElements(controller);
                       var uri = navigationAction.request.url!;
 
                       if (![
@@ -259,10 +230,6 @@ class _MyAppState extends State<MyApp> {
                       return NavigationActionPolicy.ALLOW;
                     },
                     onLoadStop: (controller, url) async {
-                      removeElements(controller);
-                      //controller.clearCache();
-                      //final cookieManager = CookieManager();
-                      //cookieManager.deleteAllCookies();
                       pullToRefreshController.endRefreshing();
                       setState(() {
                         this.url = url.toString();
@@ -273,11 +240,11 @@ class _MyAppState extends State<MyApp> {
                       pullToRefreshController.endRefreshing();
                     },
                     onProgressChanged: (controller, progress) {
-                      if (progress >= 100) {
-                        pullToRefreshController.endRefreshing();
+                      if (progress >= 65 && progress <= 75) {
                         removeElements(controller);
                       }
-                      if (progress >= 60 && progress <= 80) {
+                      if (progress >= 100) {
+                        pullToRefreshController.endRefreshing();
                         removeElements(controller);
                       }
                       setState(() {
