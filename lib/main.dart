@@ -227,6 +227,9 @@ class _MyAppState extends State<MyApp> {
                     onLoadStart: (controller, url) {
                       if (webViewController != null) {
                         removeElements(controller);
+                        controller.clearCache();
+                        final cookieManager = CookieManager();
+                        cookieManager.deleteAllCookies();
                       }
                       setState(() {
                         this.url = url.toString();
