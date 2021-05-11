@@ -9,9 +9,9 @@ import 'package:back_button_interceptor/back_button_interceptor.dart';
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (Platform.isAndroid) {
+  /*if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
-  }
+  }*/
 
   runApp(new MyApp());
 }
@@ -33,21 +33,22 @@ class _MyAppState extends State<MyApp> {
         incognito: true,
         clearCache: true,
       ),
-      android: AndroidInAppWebViewOptions(
+      /*android: AndroidInAppWebViewOptions(
         useHybridComposition: true,
-      ),
+      ),*/
       ios: IOSInAppWebViewOptions(
         allowsInlineMediaPlayback: true,
       ));
 
   late PullToRefreshController pullToRefreshController;
-  String url = "https://medium.com/topic/popular";
+
+  String urlDefault = "https://medium.com/topic/popular";
+  String url = "";
   double progress = 0;
   final urlController = TextEditingController();
 
-  String? _sharedText = '';
+  StreamSubscription? _intentDataStreamSubscription;
 
-  late StreamSubscription _intentDataStreamSubscription;
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
     webViewController?.stopLoading();
     webViewController?.clearCache();
@@ -57,58 +58,54 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    super.initState();
+    try {
+      super.initState();
 
-    BackButtonInterceptor.add(myInterceptor);
+      url = urlDefault;
 
-    pullToRefreshController = PullToRefreshController(
-      options: PullToRefreshOptions(
-        color: Colors.grey,
-      ),
-      onRefresh: () async {
-        webViewController?.stopLoading();
-        webViewController?.clearCache();
-        if (Platform.isAndroid) {
-          webViewController?.reload();
-        } else if (Platform.isIOS) {
-          webViewController?.loadUrl(
-              urlRequest: URLRequest(url: await webViewController?.getUrl()));
+      BackButtonInterceptor.add(myInterceptor);
+
+      pullToRefreshController = PullToRefreshController(
+        options: PullToRefreshOptions(
+          color: Colors.grey,
+        ),
+        onRefresh: () async {
+          webViewController?.stopLoading();
+          webViewController?.clearCache();
+          if (Platform.isAndroid) {
+            webViewController?.reload();
+          } else if (Platform.isIOS) {
+            webViewController?.loadUrl(
+                urlRequest: URLRequest(url: await webViewController?.getUrl()));
+          }
+        },
+      );
+
+      // For sharing or opening urls/text coming from outside the app while the app is in the memory
+      _intentDataStreamSubscription =
+          ReceiveSharingIntent.getTextStream().listen((String value) {
+        if (value.toString().length > 5) {
+          this.url = value;
         }
-      },
-    );
+      }, onError: (err) {
+        print("getLinkStream error: $err");
+      });
 
-    // For sharing or opening urls/text coming from outside the app while the app is in the memory
-    _intentDataStreamSubscription =
-        ReceiveSharingIntent.getTextStream().listen((String value) {
-      setState(() {
-        _sharedText = value;
-        if (_sharedText != null && _sharedText.toString().length > 5) {
-          url = _sharedText.toString();
-          webViewController?.loadUrl(
-              urlRequest: URLRequest(url: Uri.parse(url)));
+      // For sharing or opening urls/text coming from outside the app while the app is closed
+      ReceiveSharingIntent.getInitialText().then((String? value) {
+        if (value.toString().length > 5) {
+          this.url = value.toString();
         }
       });
-    }, onError: (err) {
-      print("getLinkStream error: $err");
-    });
-
-    // For sharing or opening urls/text coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialText().then((String? value) {
-      setState(() {
-        _sharedText = value;
-        if (_sharedText != null && _sharedText.toString().length > 5) {
-          url = _sharedText.toString();
-          webViewController?.loadUrl(
-              urlRequest: URLRequest(url: Uri.parse(url)));
-        }
-      });
-    });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
   void dispose() {
     BackButtonInterceptor.remove(myInterceptor);
-    _intentDataStreamSubscription.cancel();
+    _intentDataStreamSubscription?.cancel();
     super.dispose();
   }
 
@@ -116,6 +113,8 @@ class _MyAppState extends State<MyApp> {
     try {
       List<String> jsCode = [
         'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });',
+        'window.localStorage.clear();',
+        'sessionStorage.clear();',
         'document.getElementById("lo-highlight-meter-1-copy").style.display = "none";',
         'document.getElementById("lo-highlight-meter-2-copy").style.display = "none";',
         'document.getElementById("lo-highlight-meter-3-copy").style.display = "none";',
@@ -152,9 +151,7 @@ class _MyAppState extends State<MyApp> {
                       webViewController?.stopLoading();
                       webViewController?.clearCache();
                       webViewController?.loadUrl(
-                          urlRequest: URLRequest(
-                              url: Uri.parse(
-                                  "https://medium.com/topic/popular")));
+                          urlRequest: URLRequest(url: Uri.parse(urlDefault)));
                     },
                     child: Text("Medium Unlimited"))),
             actions: <Widget>[
@@ -204,7 +201,7 @@ class _MyAppState extends State<MyApp> {
                 onSubmitted: (value) {
                   var url = Uri.parse(value);
                   if (url.scheme.isEmpty) {
-                    url = Uri.parse("https://www.google.com/search?q=" + value);
+                    url = Uri.parse(urlDefault);
                   }
                   webViewController?.loadUrl(urlRequest: URLRequest(url: url));
                 },
@@ -217,9 +214,14 @@ class _MyAppState extends State<MyApp> {
                     key: webViewKey,
                     initialUrlRequest: URLRequest(url: Uri.parse(url)),
                     initialOptions: options,
-                    pullToRefreshController: pullToRefreshController,
+                    /*pullToRefreshController: pullToRefreshController,*/
                     onWebViewCreated: (controller) {
                       webViewController = controller;
+                      var address = Uri.parse(url);
+                      if (address.scheme.isEmpty == false) {
+                        webViewController?.loadUrl(
+                            urlRequest: URLRequest(url: address));
+                      }
                       if (webViewController != null) {
                         removeElements(controller);
                       }
@@ -287,6 +289,7 @@ class _MyAppState extends State<MyApp> {
                         pullToRefreshController.endRefreshing();
                         if (webViewController != null) {
                           removeElements(controller);
+                          controller.clearCache();
                         }
                       }
                       setState(() {
