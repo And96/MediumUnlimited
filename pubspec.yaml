@@ -29,6 +29,7 @@ dependencies:
   url_launcher: ^6.0.3
   back_button_interceptor: ^5.0.0
   receive_sharing_intent: ^1.4.5
+  share: ^2.0.1
 
 dev_dependencies:
   flutter_test:

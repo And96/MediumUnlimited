@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:share/share.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +22,21 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => new _MyAppState();
 }
 
+class DropdownChoices {
+  const DropdownChoices({this.title = '', this.icon = Icons.access_alarm});
+
+  final String title;
+  final IconData icon;
+}
+
 class _MyAppState extends State<MyApp> {
   final GlobalKey webViewKey = GlobalKey();
+
+  List<DropdownChoices> dropdownChoices = <DropdownChoices>[
+    DropdownChoices(title: 'Back', icon: Icons.arrow_back),
+    DropdownChoices(title: 'Forward', icon: Icons.arrow_forward),
+    DropdownChoices(title: 'Share', icon: Icons.share),
+  ];
 
   InAppWebViewController? webViewController;
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
@@ -133,6 +147,28 @@ class _MyAppState extends State<MyApp> {
     } catch (e) {}
   }
 
+  void choiceAction(DropdownChoices choice) {
+    if (choice.title == "Back") {
+      webViewController?.stopLoading();
+      webViewController?.clearCache();
+      webViewController?.goBack();
+    }
+
+    if (choice.title == "Forward") {
+      webViewController?.stopLoading();
+      webViewController?.clearCache();
+      webViewController?.goForward();
+    }
+
+    if (choice.title == "Share") {
+      webViewController?.stopLoading();
+      webViewController?.clearCache();
+      webViewController
+          ?.getUrl()
+          .then((value) => Share.share(value.toString()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -144,67 +180,69 @@ class _MyAppState extends State<MyApp> {
       ),
       home: Scaffold(
           appBar: AppBar(
-            title: Padding(
-                padding: EdgeInsets.only(right: 0.0),
-                child: GestureDetector(
-                    onTap: () {
-                      webViewController?.stopLoading();
-                      webViewController?.clearCache();
-                      webViewController?.loadUrl(
-                          urlRequest: URLRequest(url: Uri.parse(urlDefault)));
-                    },
-                    child: Text("Medium Unlimited"))),
-            actions: <Widget>[
-              Padding(
-                  padding: EdgeInsets.only(right: 20.0),
+              title: Padding(
+                  padding: EdgeInsets.only(right: 0.0),
                   child: GestureDetector(
-                    onTap: () {
-                      webViewController?.stopLoading();
-                      webViewController?.clearCache();
-                      webViewController?.goBack();
-                    },
-                    child: Icon(
-                      Icons.arrow_back,
-                    ),
-                  )),
-              Padding(
-                  padding: EdgeInsets.only(right: 20.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      webViewController?.stopLoading();
-                      webViewController?.clearCache();
-                      webViewController?.goForward();
-                    },
-                    child: Icon(
-                      Icons.arrow_forward,
-                    ),
-                  )),
-              Padding(
-                  padding: EdgeInsets.only(right: 20.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      webViewController?.stopLoading();
-                      webViewController?.clearCache();
-                      webViewController?.reload();
-                    },
-                    child: Icon(Icons.refresh),
-                  )),
-            ],
-          ),
+                      onTap: () {
+                        webViewController?.stopLoading();
+                        webViewController?.clearCache();
+                        webViewController?.loadUrl(
+                            urlRequest: URLRequest(url: Uri.parse(urlDefault)));
+                      },
+                      child: Text("Medium Unlimited"))),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.refresh),
+                  onPressed: () {
+                    webViewController?.stopLoading();
+                    webViewController?.clearCache();
+                    webViewController?.reload();
+                  },
+                ),
+
+                PopupMenuButton<DropdownChoices>(
+                  onSelected: choiceAction,
+                  elevation: 6,
+                  itemBuilder: (BuildContext context) {
+                    return dropdownChoices.map((DropdownChoices choice) {
+                      return PopupMenuItem<DropdownChoices>(
+                        value: choice,
+                        child: Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.only(right: 15.0),
+                              child: Icon(choice.icon),
+                            ),
+                            Text(choice.title),
+                          ],
+                        ),
+                      );
+                    }).toList();
+                  },
+                ),
+
+                // overflow menu
+              ]),
           body: SafeArea(
               child: Column(children: <Widget>[
             Padding(
               padding: EdgeInsets.only(left: 15.0),
-              child: TextField(
-                controller: urlController,
-                keyboardType: TextInputType.url,
-                onSubmitted: (value) {
-                  var url = Uri.parse(value);
-                  if (url.scheme.isEmpty) {
-                    url = Uri.parse(urlDefault);
-                  }
-                  webViewController?.loadUrl(urlRequest: URLRequest(url: url));
-                },
+              child: GestureDetector(
+                child: TextField(
+                  controller: urlController,
+                  keyboardType: TextInputType.url,
+                  onSubmitted: (value) {
+                    var url = Uri.parse(value);
+                    if (url.scheme.isEmpty) {
+                      url = Uri.parse(urlDefault);
+                    }
+                    webViewController?.loadUrl(
+                        urlRequest: URLRequest(url: url));
+                  },
+                ),
+                onDoubleTap: () => urlController.selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: urlController.value.text.length),
               ),
             ),
             Expanded(
@@ -280,12 +318,12 @@ class _MyAppState extends State<MyApp> {
                       pullToRefreshController.endRefreshing();
                     },
                     onProgressChanged: (controller, progress) {
-                      if (progress >= 65 && progress <= 75) {
+                      if (progress >= 60 && progress <= 70) {
                         if (webViewController != null) {
                           removeElements(controller);
                         }
                       }
-                      if (progress >= 100) {
+                      if (progress == 100) {
                         pullToRefreshController.endRefreshing();
                         if (webViewController != null) {
                           removeElements(controller);
@@ -303,9 +341,9 @@ class _MyAppState extends State<MyApp> {
                         urlController.text = this.url;
                       });
                     },
-                    onConsoleMessage: (controller, consoleMessage) {
+                    /*onConsoleMessage: (controller, consoleMessage) {
                       print(consoleMessage);
-                    },
+                    },*/
                   ),
                   progress < 1.0
                       ? LinearProgressIndicator(value: progress)
