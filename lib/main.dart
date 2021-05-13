@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -9,11 +8,9 @@ import 'package:share/share.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   /*if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
   }*/
-
   runApp(new MyApp());
 }
 
@@ -32,6 +29,8 @@ class DropdownChoices {
 class _MyAppState extends State<MyApp> {
   final GlobalKey webViewKey = GlobalKey();
 
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   List<DropdownChoices> dropdownChoices = <DropdownChoices>[
     DropdownChoices(title: 'Back', icon: Icons.arrow_back),
     DropdownChoices(title: 'Forward', icon: Icons.arrow_forward),
@@ -41,20 +40,23 @@ class _MyAppState extends State<MyApp> {
   InAppWebViewController? webViewController;
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
       crossPlatform: InAppWebViewOptions(
+        javaScriptCanOpenWindowsAutomatically: false,
         useShouldOverrideUrlLoading: true,
         mediaPlaybackRequiresUserGesture: true,
         cacheEnabled: false,
         incognito: true,
         clearCache: true,
       ),
+      //CRASH WHEN APP OPENED FROM INTENT IF USED WITH useHybridComposition
       /*android: AndroidInAppWebViewOptions(
         useHybridComposition: true,
+        clearSessionCache: true,
       ),*/
       ios: IOSInAppWebViewOptions(
         allowsInlineMediaPlayback: true,
       ));
 
-  late PullToRefreshController pullToRefreshController;
+  //late PullToRefreshController pullToRefreshController;
 
   String urlDefault = "https://medium.com/topic/popular";
   String url = "";
@@ -78,22 +80,6 @@ class _MyAppState extends State<MyApp> {
       url = urlDefault;
 
       BackButtonInterceptor.add(myInterceptor);
-
-      pullToRefreshController = PullToRefreshController(
-        options: PullToRefreshOptions(
-          color: Colors.grey,
-        ),
-        onRefresh: () async {
-          webViewController?.stopLoading();
-          webViewController?.clearCache();
-          if (Platform.isAndroid) {
-            webViewController?.reload();
-          } else if (Platform.isIOS) {
-            webViewController?.loadUrl(
-                urlRequest: URLRequest(url: await webViewController?.getUrl()));
-          }
-        },
-      );
 
       // For sharing or opening urls/text coming from outside the app while the app is in the memory
       _intentDataStreamSubscription =
@@ -172,24 +158,18 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // Define the default brightness and colors.
         brightness: Brightness.dark,
         primaryColor: Colors.grey[900],
         accentColor: Colors.black,
       ),
       home: Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
               title: Padding(
                   padding: EdgeInsets.only(right: 0.0),
-                  child: GestureDetector(
-                      onTap: () {
-                        webViewController?.stopLoading();
-                        webViewController?.clearCache();
-                        webViewController?.loadUrl(
-                            urlRequest: URLRequest(url: Uri.parse(urlDefault)));
-                      },
-                      child: Text("Medium Unlimited"))),
+                  child: Text("Medium Unlimited")),
               actions: <Widget>[
                 IconButton(
                   icon: Icon(Icons.refresh),
@@ -199,8 +179,8 @@ class _MyAppState extends State<MyApp> {
                     webViewController?.reload();
                   },
                 ),
-
                 PopupMenuButton<DropdownChoices>(
+                  color: Colors.grey[900],
                   onSelected: choiceAction,
                   elevation: 6,
                   itemBuilder: (BuildContext context) {
@@ -220,9 +200,142 @@ class _MyAppState extends State<MyApp> {
                     }).toList();
                   },
                 ),
-
-                // overflow menu
               ]),
+          drawer: Drawer(
+            child: Container(
+              //child: Your widget,
+              color: Colors.grey[900],
+              width: double.infinity,
+              height: double.infinity,
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  new SizedBox(
+                    height: 120.0,
+                    child: DrawerHeader(
+                      child: ListTile(
+                        leading: Icon(Icons.rss_feed),
+                        contentPadding: EdgeInsets.only(left: 0.0, right: 0.0),
+                        title: Text('Medium.com'),
+                        onTap: () {
+                          _scaffoldKey.currentState?.openEndDrawer();
+                          webViewController?.stopLoading();
+                          webViewController?.clearCache();
+                          webViewController?.loadUrl(
+                              urlRequest: URLRequest(
+                                  url: Uri.parse("https://medium.com")));
+                          Navigator.pop(context);
+                        },
+                      ),
+                      decoration: BoxDecoration(color: Colors.grey[850]),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.trending_up),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    title: Text('Popular'),
+                    onTap: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                      webViewController?.stopLoading();
+                      webViewController?.clearCache();
+                      webViewController?.loadUrl(
+                          urlRequest: URLRequest(
+                              url: Uri.parse(
+                                  "https://medium.com/topic/popular")));
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.person),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    title: Text('Self'),
+                    onTap: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                      webViewController?.stopLoading();
+                      webViewController?.clearCache();
+                      webViewController?.loadUrl(
+                          urlRequest: URLRequest(
+                              url: Uri.parse("https://medium.com/topic/self")));
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.people),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    title: Text('Relationships'),
+                    onTap: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                      webViewController?.stopLoading();
+                      webViewController?.clearCache();
+                      webViewController?.loadUrl(
+                          urlRequest: URLRequest(
+                              url: Uri.parse(
+                                  "https://medium.com/topic/relationships")));
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.work),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    title: Text('Productivity'),
+                    onTap: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                      webViewController?.stopLoading();
+                      webViewController?.clearCache();
+                      webViewController?.loadUrl(
+                          urlRequest: URLRequest(
+                              url: Uri.parse(
+                                  "https://medium.com/topic/productivity")));
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.healing),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    title: Text('Health'),
+                    onTap: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                      webViewController?.stopLoading();
+                      webViewController?.clearCache();
+                      webViewController?.loadUrl(
+                          urlRequest: URLRequest(
+                              url: Uri.parse(
+                                  "https://medium.com/topic/health")));
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.code),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    title: Text('Programming'),
+                    onTap: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                      webViewController?.stopLoading();
+                      webViewController?.clearCache();
+                      webViewController?.loadUrl(
+                          urlRequest: URLRequest(
+                              url: Uri.parse(
+                                  "https://medium.com/topic/programming")));
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Divider(height: 1, thickness: 1, color: Colors.grey[850]),
+                  ListTile(
+                    leading: Icon(Icons.add_link),
+                    title: Text('Add link'),
+                    onTap: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                      webViewController?.stopLoading();
+                      webViewController?.clearCache();
+                      webViewController?.loadUrl(
+                          urlRequest: URLRequest(url: Uri.parse(urlDefault)));
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
           body: SafeArea(
               child: Column(children: <Widget>[
             Padding(
@@ -240,9 +353,6 @@ class _MyAppState extends State<MyApp> {
                         urlRequest: URLRequest(url: url));
                   },
                 ),
-                onDoubleTap: () => urlController.selection = TextSelection(
-                    baseOffset: 0,
-                    extentOffset: urlController.value.text.length),
               ),
             ),
             Expanded(
@@ -251,8 +361,7 @@ class _MyAppState extends State<MyApp> {
                   InAppWebView(
                     key: webViewKey,
                     initialUrlRequest: URLRequest(url: Uri.parse(url)),
-                    initialOptions: options,
-                    /*pullToRefreshController: pullToRefreshController,*/
+                    initialOptions: this.options,
                     onWebViewCreated: (controller) {
                       webViewController = controller;
                       var address = Uri.parse(url);
@@ -260,17 +369,13 @@ class _MyAppState extends State<MyApp> {
                         webViewController?.loadUrl(
                             urlRequest: URLRequest(url: address));
                       }
-                      if (webViewController != null) {
-                        removeElements(controller);
-                      }
+                      removeElements(controller);
                     },
                     onLoadStart: (controller, url) {
-                      if (webViewController != null) {
-                        removeElements(controller);
-                        controller.clearCache();
-                        final cookieManager = CookieManager();
-                        cookieManager.deleteAllCookies();
-                      }
+                      removeElements(controller);
+                      controller.clearCache();
+                      final cookieManager = CookieManager();
+                      cookieManager.deleteAllCookies();
                       setState(() {
                         this.url = url.toString();
                         urlController.text = this.url;
@@ -285,7 +390,6 @@ class _MyAppState extends State<MyApp> {
                     shouldOverrideUrlLoading:
                         (controller, navigationAction) async {
                       var uri = navigationAction.request.url!;
-
                       if (![
                         "http",
                         "https",
@@ -296,11 +400,9 @@ class _MyAppState extends State<MyApp> {
                         "about"
                       ].contains(uri.scheme)) {
                         if (await canLaunch(url)) {
-                          // Launch the App
                           await launch(
                             url,
                           );
-                          // and cancel the request
                           return NavigationActionPolicy.CANCEL;
                         }
                       }
@@ -308,15 +410,14 @@ class _MyAppState extends State<MyApp> {
                       return NavigationActionPolicy.ALLOW;
                     },
                     onLoadStop: (controller, url) async {
-                      pullToRefreshController.endRefreshing();
+                      //pullToRefreshController.endRefreshing();
                       setState(() {
                         this.url = url.toString();
                         urlController.text = this.url;
                       });
                     },
-                    onLoadError: (controller, url, code, message) {
-                      pullToRefreshController.endRefreshing();
-                    },
+                    /*onLoadError: (controller, url, code, message) {
+                    },*/
                     onProgressChanged: (controller, progress) {
                       if (progress >= 60 && progress <= 70) {
                         if (webViewController != null) {
@@ -324,7 +425,6 @@ class _MyAppState extends State<MyApp> {
                         }
                       }
                       if (progress == 100) {
-                        pullToRefreshController.endRefreshing();
                         if (webViewController != null) {
                           removeElements(controller);
                           controller.clearCache();
