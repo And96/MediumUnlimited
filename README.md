@@ -6,7 +6,7 @@ An Android application written with Flutter/Dart to read medium.com without limi
 Beta
 
 ## Screenshot
-<img src="https://raw.githubusercontent.com/And96/MediumUnlimited/main/docs/Screenshot_1.jpg" width="340" height="580">
+<img src="https://raw.githubusercontent.com/And96/MediumUnlimited/main/docs/Screenshot_1.jpg" width="545" height="550">
 
 ## How to build
 ```
