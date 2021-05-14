@@ -5,6 +5,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,12 +72,43 @@ class _MyAppState extends State<MyApp> {
     return true;
   }
 
+  List<String>? favouriteLinks = <String>[];
+
+  _loadFavouriteLinks() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    favouriteLinks = prefs.getStringList('favourite_links');
+
+    if (favouriteLinks?.length == 0) {
+      favouriteLinks?.add('https://medium.com');
+      favouriteLinks?.add('https://medium.com');
+      favouriteLinks?.add('https://medium.com');
+      prefs.setStringList('favourite_links', favouriteLinks!);
+    }
+  }
+
+  addFavouriteLinks(String value) async {
+    if (favouriteLinks == null || favouriteLinks?.length == 0) {
+      setState(() {
+        favouriteLinks = [];
+      });
+    }
+
+    setState(() {
+      favouriteLinks?.add(value);
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('favourite_links', favouriteLinks!);
+  }
+
   @override
   void initState() {
     try {
       super.initState();
 
       url = urlDefault;
+
+      _loadFavouriteLinks();
 
       BackButtonInterceptor.add(myInterceptor);
 
@@ -202,7 +234,6 @@ class _MyAppState extends State<MyApp> {
               ]),
           drawer: Drawer(
             child: Container(
-              //child: Your widget,
               color: Colors.grey[900],
               width: double.infinity,
               height: double.infinity,
@@ -321,13 +352,13 @@ class _MyAppState extends State<MyApp> {
                   Divider(height: 1, thickness: 1, color: Colors.grey[850]),
                   ListTile(
                     leading: Icon(Icons.add_link),
-                    title: Text('Add link'),
+                    title: Text('Add link - ' +
+                        ((favouriteLinks == null)
+                                ? 0
+                                : favouriteLinks!.length.toString())
+                            .toString()),
                     onTap: () {
-                      _scaffoldKey.currentState?.openEndDrawer();
-                      webViewController?.stopLoading();
-                      webViewController?.clearCache();
-                      webViewController?.loadUrl(
-                          urlRequest: URLRequest(url: Uri.parse(urlDefault)));
+                      addFavouriteLinks('123456');
                       Navigator.pop(context);
                     },
                   ),

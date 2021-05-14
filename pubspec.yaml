@@ -30,6 +30,7 @@ dependencies:
   back_button_interceptor: ^5.0.0
   receive_sharing_intent: ^1.4.5
   share: ^2.0.1
+  shared_preferences: ^2.0.5
 
 dev_dependencies:
   flutter_test:
