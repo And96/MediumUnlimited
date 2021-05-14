@@ -47,11 +47,10 @@ class _MyAppState extends State<MyApp> {
         incognito: true,
         clearCache: true,
       ),
-      //CRASH WHEN APP OPENED FROM INTENT IF USED WITH useHybridComposition
-      /*android: AndroidInAppWebViewOptions(
-        useHybridComposition: true,
-        clearSessionCache: true,
-      ),*/
+      android: AndroidInAppWebViewOptions(
+          //useHybridComposition: true, //CRASH WHEN APP OPENED FROM INTENT IF USED WITH useHybridComposition
+          clearSessionCache: true,
+          forceDark: AndroidForceDark.FORCE_DARK_ON),
       ios: IOSInAppWebViewOptions(
         allowsInlineMediaPlayback: true,
       ));
