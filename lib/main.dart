@@ -334,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: <Widget>[
               Container(
                 margin: EdgeInsets.all(0),
-                color: Colors.black45,
+                color: Colors.black12,
                 height: 110,
                 child: DrawerHeader(
                   child: ListTile(
@@ -354,10 +354,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Container(
                 height: 60,
-                color: Colors.black45,
+                color: Colors.black12,
                 child: TabBar(
                     indicatorSize: TabBarIndicatorSize.tab,
-                    indicatorColor: Colors.grey,
+                    indicatorColor: Colors.black12,
+                    indicatorWeight: 1,
                     tabs: [
                       Tab(text: "Categories"),
                       Tab(text: "Links"),
