@@ -110,12 +110,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   TextEditingController _textFieldController = TextEditingController();
-  Future<void> _displayTextInputDialog(BuildContext context) async {
+  Future<void> _displayTextInputDialog(
+      BuildContext context, String text) async {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('TextField in Dialog'),
+            title: Text('Enter link'),
             content: TextField(
               onChanged: (value) {
                 setState(() {
@@ -123,11 +124,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               controller: _textFieldController,
-              decoration: InputDecoration(hintText: "Text Field in Dialog"),
+              decoration: InputDecoration(hintText: "Url"),
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('CANCEL'),
+                child: Text('Cancel'),
                 onPressed: () {
                   setState(() {
                     Navigator.pop(context);
@@ -135,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               TextButton(
-                child: Text('OK'),
+                child: Text('Add'),
                 onPressed: () {
                   setState(() {
                     codeDialog = valueText;
@@ -391,9 +392,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             ? 0
                             : favouriteLinks!.length.toString())
                         .toString()),
-                onTap: () {
-                  _displayTextInputDialog(context);
-                  addFavouriteLinks('123456');
+                onTap: () async {
+                  await _displayTextInputDialog(
+                      context, _textFieldController.text);
+                  addFavouriteLinks(_textFieldController.text);
                   Navigator.pop(context);
                 },
               ),
