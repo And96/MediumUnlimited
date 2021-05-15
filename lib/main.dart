@@ -100,11 +100,28 @@ class _HomeScreenState extends State<HomeScreen> {
         favouriteLinks = [];
       });
     }
-
     setState(() {
-      favouriteLinks?.add(value);
+      if (value.length > 5) {
+        favouriteLinks?.add(value);
+      }
     });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('favourite_links', favouriteLinks!);
+  }
 
+  deleteFavouriteLinks(String value) async {
+    if (favouriteLinks == null || favouriteLinks?.length == 0) {
+      setState(() {
+        favouriteLinks = [];
+      });
+    }
+    setState(() {
+      for (var i = 0; i < favouriteLinks!.length.toInt(); i++) {
+        if (favouriteLinks!.elementAt(i) == value.toString()) {
+          favouriteLinks?.remove(value);
+        }
+      }
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList('favourite_links', favouriteLinks!);
   }
@@ -112,6 +129,9 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController _textFieldController = TextEditingController();
   Future<void> _displayTextInputDialog(
       BuildContext context, String text) async {
+    webViewController
+        ?.getUrl()
+        .then((value) => _textFieldController.text = value.toString());
     return showDialog(
         context: context,
         builder: (context) {
@@ -119,9 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
             title: Text('Enter link'),
             content: TextField(
               onChanged: (value) {
-                setState(() {
-                  valueText = value;
-                });
+                setState(() {});
               },
               controller: _textFieldController,
               decoration: InputDecoration(hintText: "Url"),
@@ -131,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text('Cancel'),
                 onPressed: () {
                   setState(() {
+                    _textFieldController.text = '';
                     Navigator.pop(context);
                   });
                 },
@@ -139,7 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text('Add'),
                 onPressed: () {
                   setState(() {
-                    codeDialog = valueText;
                     Navigator.pop(context);
                   });
                 },
@@ -149,8 +167,40 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  late String codeDialog;
-  late String valueText;
+  showAlertDialogDeleteLink(BuildContext context, String item) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("No"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Yes"),
+      onPressed: () {
+        deleteFavouriteLinks(item);
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Confirm delete"),
+      content: Text("Delete the selected link?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -277,15 +327,15 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ]),
       drawer: Drawer(
-        child: Container(
-          color: Colors.grey[900],
-          width: double.infinity,
-          height: double.infinity,
-          child: ListView(
-            padding: EdgeInsets.zero,
+        child: DefaultTabController(
+          length: 2,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              new SizedBox(
-                height: 120.0,
+              Container(
+                margin: EdgeInsets.all(0),
+                color: Colors.black45,
+                height: 110,
                 child: DrawerHeader(
                   child: ListTile(
                     leading: Icon(Icons.rss_feed),
@@ -300,104 +350,165 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.pop(context);
                     },
                   ),
-                  decoration: BoxDecoration(color: Colors.grey[850]),
                 ),
               ),
-              ListTile(
-                leading: Icon(Icons.trending_up),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                title: Text('Popular'),
-                onTap: () {
-                  webViewController?.stopLoading();
-                  webViewController?.clearCache();
-                  webViewController?.loadUrl(
-                      urlRequest: URLRequest(
-                          url: Uri.parse("https://medium.com/topic/popular")));
-                  Navigator.pop(context);
-                },
+              Container(
+                height: 60,
+                color: Colors.black45,
+                child: TabBar(
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorColor: Colors.grey,
+                    tabs: [
+                      Tab(text: "Categories"),
+                      Tab(text: "Links"),
+                    ]),
               ),
-              ListTile(
-                leading: Icon(Icons.person),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                title: Text('Self'),
-                onTap: () {
-                  webViewController?.stopLoading();
-                  webViewController?.clearCache();
-                  webViewController?.loadUrl(
-                      urlRequest: URLRequest(
-                          url: Uri.parse("https://medium.com/topic/self")));
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.people),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                title: Text('Relationships'),
-                onTap: () {
-                  webViewController?.stopLoading();
-                  webViewController?.clearCache();
-                  webViewController?.loadUrl(
-                      urlRequest: URLRequest(
-                          url: Uri.parse(
-                              "https://medium.com/topic/relationships")));
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.work),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                title: Text('Productivity'),
-                onTap: () {
-                  webViewController?.stopLoading();
-                  webViewController?.clearCache();
-                  webViewController?.loadUrl(
-                      urlRequest: URLRequest(
-                          url: Uri.parse(
-                              "https://medium.com/topic/productivity")));
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.healing),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                title: Text('Health'),
-                onTap: () {
-                  webViewController?.stopLoading();
-                  webViewController?.clearCache();
-                  webViewController?.loadUrl(
-                      urlRequest: URLRequest(
-                          url: Uri.parse("https://medium.com/topic/health")));
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.code),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                title: Text('Programming'),
-                onTap: () {
-                  webViewController?.stopLoading();
-                  webViewController?.clearCache();
-                  webViewController?.loadUrl(
-                      urlRequest: URLRequest(
-                          url: Uri.parse(
-                              "https://medium.com/topic/programming")));
-                  Navigator.pop(context);
-                },
-              ),
-              Divider(height: 1, thickness: 1, color: Colors.grey[850]),
-              ListTile(
-                leading: Icon(Icons.add_link),
-                title: Text('Add link - ' +
-                    ((favouriteLinks == null)
-                            ? 0
-                            : favouriteLinks!.length.toString())
-                        .toString()),
-                onTap: () async {
-                  await _displayTextInputDialog(
-                      context, _textFieldController.text);
-                  addFavouriteLinks(_textFieldController.text);
-                  Navigator.pop(context);
-                },
+              Expanded(
+                child: Container(
+                  child: TabBarView(children: [
+                    Container(
+                      child: Container(
+                        color: Colors.grey[900],
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: ListView(
+                            padding: EdgeInsets.zero,
+                            children: <Widget>[
+                              ListTile(
+                                leading: Icon(Icons.trending_up),
+                                trailing: Icon(Icons.keyboard_arrow_right),
+                                title: Text('Popular'),
+                                onTap: () {
+                                  webViewController?.stopLoading();
+                                  webViewController?.clearCache();
+                                  webViewController?.loadUrl(
+                                      urlRequest: URLRequest(
+                                          url: Uri.parse(
+                                              "https://medium.com/topic/popular")));
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.person),
+                                trailing: Icon(Icons.keyboard_arrow_right),
+                                title: Text('Self'),
+                                onTap: () {
+                                  webViewController?.stopLoading();
+                                  webViewController?.clearCache();
+                                  webViewController?.loadUrl(
+                                      urlRequest: URLRequest(
+                                          url: Uri.parse(
+                                              "https://medium.com/topic/self")));
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.people),
+                                trailing: Icon(Icons.keyboard_arrow_right),
+                                title: Text('Relationships'),
+                                onTap: () {
+                                  webViewController?.stopLoading();
+                                  webViewController?.clearCache();
+                                  webViewController?.loadUrl(
+                                      urlRequest: URLRequest(
+                                          url: Uri.parse(
+                                              "https://medium.com/topic/relationships")));
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.work),
+                                trailing: Icon(Icons.keyboard_arrow_right),
+                                title: Text('Productivity'),
+                                onTap: () {
+                                  webViewController?.stopLoading();
+                                  webViewController?.clearCache();
+                                  webViewController?.loadUrl(
+                                      urlRequest: URLRequest(
+                                          url: Uri.parse(
+                                              "https://medium.com/topic/productivity")));
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.healing),
+                                trailing: Icon(Icons.keyboard_arrow_right),
+                                title: Text('Health'),
+                                onTap: () {
+                                  webViewController?.stopLoading();
+                                  webViewController?.clearCache();
+                                  webViewController?.loadUrl(
+                                      urlRequest: URLRequest(
+                                          url: Uri.parse(
+                                              "https://medium.com/topic/health")));
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.code),
+                                trailing: Icon(Icons.keyboard_arrow_right),
+                                title: Text('Programming'),
+                                onTap: () {
+                                  webViewController?.stopLoading();
+                                  webViewController?.clearCache();
+                                  webViewController?.loadUrl(
+                                      urlRequest: URLRequest(
+                                          url: Uri.parse(
+                                              "https://medium.com/topic/programming")));
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ]),
+                      ),
+                    ),
+                    Container(
+                      child: Container(
+                        color: Colors.grey[900],
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: ListView(
+                            padding: EdgeInsets.zero,
+                            children: <Widget>[
+                              ListTile(
+                                leading: Icon(Icons.add_link),
+                                title: Text('Add link'),
+                                onTap: () async {
+                                  await _displayTextInputDialog(
+                                      context, _textFieldController.text);
+                                  addFavouriteLinks(_textFieldController.text);
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: Colors.grey[850]),
+                              for (var i = 0;
+                                  i < favouriteLinks!.length.toInt();
+                                  i++)
+                                ListTile(
+                                  leading: Icon(Icons.link),
+                                  trailing: Icon(Icons.keyboard_arrow_right),
+                                  title: Text(favouriteLinks!.elementAt(i)),
+                                  onLongPress: () {
+                                    showAlertDialogDeleteLink(
+                                        context, favouriteLinks!.elementAt(i));
+                                  },
+                                  onTap: () {
+                                    webViewController?.stopLoading();
+                                    webViewController?.clearCache();
+                                    webViewController?.loadUrl(
+                                        urlRequest: URLRequest(
+                                            url: Uri.parse(
+                                                favouriteLinks!.elementAt(i))));
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                            ]),
+                      ),
+                    ),
+                  ]),
+                ),
               ),
             ],
           ),
