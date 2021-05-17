@@ -64,8 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
         allowsInlineMediaPlayback: true,
       ));
 
-  //late PullToRefreshController pullToRefreshController;
-
   String urlDefault = "https://medium.com/topic/popular";
   String url = "";
   double progress = 0;
@@ -82,20 +80,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<String>? favouriteLinks = <String>[];
 
-  _loadFavouriteLinks() async {
+  loadFavouriteLinks() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     favouriteLinks = prefs.getStringList('favourite_links');
-
-    if (favouriteLinks?.length == 0) {
-      favouriteLinks?.add('https://medium.com');
-      favouriteLinks?.add('https://medium.com');
-      favouriteLinks?.add('https://medium.com');
-      prefs.setStringList('favourite_links', favouriteLinks!);
+    if (favouriteLinks == null) {
+      setState(() {
+        favouriteLinks = [];
+      });
     }
   }
 
   addFavouriteLinks(String value) async {
-    if (favouriteLinks == null || favouriteLinks?.length == 0) {
+    if (favouriteLinks == null) {
       setState(() {
         favouriteLinks = [];
       });
@@ -110,18 +106,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   deleteFavouriteLinks(String value) async {
-    if (favouriteLinks == null || favouriteLinks?.length == 0) {
+    if (favouriteLinks == null) {
       setState(() {
         favouriteLinks = [];
       });
     }
-    setState(() {
-      for (var i = 0; i < favouriteLinks!.length.toInt(); i++) {
-        if (favouriteLinks!.elementAt(i) == value.toString()) {
+    for (var i = 0; i < favouriteLinks!.length.toInt(); i++) {
+      if (favouriteLinks!.elementAt(i) == value.toString()) {
+        setState(() {
           favouriteLinks?.remove(value);
-        }
+        });
       }
-    });
+    }
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList('favourite_links', favouriteLinks!);
   }
@@ -150,16 +146,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   setState(() {
                     _textFieldController.text = '';
-                    Navigator.pop(context);
                   });
+                  Navigator.pop(context);
                 },
               ),
               TextButton(
                 child: Text('Add'),
                 onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -168,7 +162,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   showAlertDialogDeleteLink(BuildContext context, String item) {
-    // set up the buttons
     Widget cancelButton = TextButton(
       child: Text("No"),
       onPressed: () {
@@ -182,8 +175,6 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.pop(context);
       },
     );
-
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text("Confirm delete"),
       content: Text("Delete the selected link?"),
@@ -192,8 +183,6 @@ class _HomeScreenState extends State<HomeScreen> {
         continueButton,
       ],
     );
-
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -209,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       url = urlDefault;
 
-      _loadFavouriteLinks();
+      loadFavouriteLinks();
 
       BackButtonInterceptor.add(myInterceptor);
 
@@ -253,8 +242,13 @@ class _HomeScreenState extends State<HomeScreen> {
         'document.getElementById("lo-highlight-meter-1-highlight-box").style.display = "none";',
         'document.getElementById("lo-highlight-meter-2-highlight-box").style.display = "none";',
         'document.getElementById("lo-highlight-meter-3-highlight-box").style.display = "none";',
-        'document.getElementById("cv cw cx cy aj cz da s").style.display = "none";',
         'document.getElementsByClassName("branch-journeys-top").item(0).style.display = "none";',
+        'document.getElementById("cv cw cx cy aj cz da s").style.display = "none";',
+        'document.getElementsByClassName("mn u gs mo aj mp mq mr ms mt mu mv mw mx my mz na nb nc nd ne nf ng nh ni nj nk nl nm nn no np nq nr ns nt").item(0).style.display = "none";',
+        'document.getElementById("animated-container").style.display = "none";',
+        'document.getElementsByClassName("ac ae af ag ah ai aj ak al").item(0).style.display = "none";',
+        'document.getElementById("credentials-picker-container").style.display = "none";',
+        'document.getElementsByClassName("ah ai ix iy af iz ja jb jc jd je jf jg jh ji jj jk jl jm jn jo jp jq jr js jt ju jv jw jx jy jz ka kb kc kd").item(0).style.display = "none";',
         'document.getElementById("lo-highlight-meter-1-link").style.display = "none";',
         'document.getElementById("lo-highlight-meter-2-link").style.display = "none";',
         'document.getElementById("lo-highlight-meter-3-link").style.display = "none";'
@@ -353,15 +347,49 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Container(
-                height: 60,
+                height: 52,
                 color: Colors.black12,
                 child: TabBar(
                     indicatorSize: TabBarIndicatorSize.tab,
                     indicatorColor: Colors.black12,
                     indicatorWeight: 1,
                     tabs: [
-                      Tab(text: "Categories"),
-                      Tab(text: "Links"),
+                      Tab(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.label,
+                            ),
+                            SizedBox(
+                              width: 10.0,
+                            ),
+                            Text(
+                              "Topics",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.star,
+                            ),
+                            SizedBox(
+                              width: 10.0,
+                            ),
+                            Text(
+                              "Links",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
                     ]),
               ),
               Expanded(
@@ -404,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               ),
                               ListTile(
-                                leading: Icon(Icons.people),
+                                leading: Icon(Icons.favorite_outline),
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Relationships'),
                                 onTap: () {
@@ -456,6 +484,48 @@ class _HomeScreenState extends State<HomeScreen> {
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
                                               "https://medium.com/topic/programming")));
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.science),
+                                trailing: Icon(Icons.keyboard_arrow_right),
+                                title: Text('Science'),
+                                onTap: () {
+                                  webViewController?.stopLoading();
+                                  webViewController?.clearCache();
+                                  webViewController?.loadUrl(
+                                      urlRequest: URLRequest(
+                                          url: Uri.parse(
+                                              "https://medium.com/topic/science")));
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.people),
+                                trailing: Icon(Icons.keyboard_arrow_right),
+                                title: Text('Society'),
+                                onTap: () {
+                                  webViewController?.stopLoading();
+                                  webViewController?.clearCache();
+                                  webViewController?.loadUrl(
+                                      urlRequest: URLRequest(
+                                          url: Uri.parse(
+                                              "https://medium.com/topic/society")));
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.computer),
+                                trailing: Icon(Icons.keyboard_arrow_right),
+                                title: Text('Technology'),
+                                onTap: () {
+                                  webViewController?.stopLoading();
+                                  webViewController?.clearCache();
+                                  webViewController?.loadUrl(
+                                      urlRequest: URLRequest(
+                                          url: Uri.parse(
+                                              "https://medium.com/topic/technology")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -519,18 +589,16 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(children: <Widget>[
         Padding(
           padding: EdgeInsets.only(left: 15.0),
-          child: GestureDetector(
-            child: TextField(
-              controller: urlController,
-              keyboardType: TextInputType.url,
-              onSubmitted: (value) {
-                var url = Uri.parse(value);
-                if (url.scheme.isEmpty) {
-                  url = Uri.parse(urlDefault);
-                }
-                webViewController?.loadUrl(urlRequest: URLRequest(url: url));
-              },
-            ),
+          child: TextField(
+            controller: urlController,
+            keyboardType: TextInputType.url,
+            onSubmitted: (value) {
+              var url = Uri.parse(value);
+              if (url.scheme.isEmpty) {
+                url = Uri.parse(urlDefault);
+              }
+              webViewController?.loadUrl(urlRequest: URLRequest(url: url));
+            },
           ),
         ),
         Expanded(
@@ -583,11 +651,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       return NavigationActionPolicy.CANCEL;
                     }
                   }
-
                   return NavigationActionPolicy.ALLOW;
                 },
                 onLoadStop: (controller, url) async {
-                  //pullToRefreshController.endRefreshing();
                   setState(() {
                     this.url = url.toString();
                     urlController.text = this.url;
@@ -622,7 +688,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       print(consoleMessage);
                     },*/
               ),
-              progress < 1.0
+              progress < 2.0
                   ? LinearProgressIndicator(value: progress)
                   : Container(),
             ],
