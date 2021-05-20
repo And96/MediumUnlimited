@@ -10,7 +10,7 @@ An Android application written with Flutter/Dart to read medium.com without limi
  - Open links shared by others apps
 
  ## Screenshot
-<img src="https://raw.githubusercontent.com/And96/MediumUnlimited/main/docs/Screenshot_1.jpg" width="900" height="500">
+<img src="https://raw.githubusercontent.com/And96/MediumUnlimited/main/docs/Screenshot_1.jpg" width="100%">
 
  ## Faq
 
