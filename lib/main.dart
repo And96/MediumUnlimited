@@ -17,7 +17,11 @@ Future main() async {
     theme: ThemeData(
       brightness: Brightness.dark,
       primaryColor: Colors.grey[900],
-      colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.black),
+      primarySwatch: Colors.grey,
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary: Colors.grey[900],
+          secondary: Colors.black,
+          background: Colors.black),
     ),
     home: HomeScreen(),
   ));
