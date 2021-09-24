@@ -17,7 +17,7 @@ Future main() async {
     theme: ThemeData(
       brightness: Brightness.dark,
       primaryColor: Colors.grey[900],
-      accentColor: Colors.black,
+      colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.black),
     ),
     home: HomeScreen(),
   ));
@@ -251,7 +251,16 @@ class _HomeScreenState extends State<HomeScreen> {
         'document.getElementsByClassName("ah ai ix iy af iz ja jb jc jd je jf jg jh ji jj jk jl jm jn jo jp jq jr js jt ju jv jw jx jy jz ka kb kc kd").item(0).style.display = "none";',
         'document.getElementById("lo-highlight-meter-1-link").style.display = "none";',
         'document.getElementById("lo-highlight-meter-2-link").style.display = "none";',
-        'document.getElementById("lo-highlight-meter-3-link").style.display = "none";'
+        'document.getElementById("lo-highlight-meter-3-link").style.display = "none";',
+        'document.getElementsByClassName("tv").item(0).click();',
+        'document.getElementsByClassName("bv bw bx by bz ca cb cc bb cd tw tx cg to tp").item(0).click();',
+        'document.getElementsByClassName("s hw u w").item(0).click();',
+        'document.getElementsById("close").click();',
+        'document.getElementById("kx u kz sy sz ta tb tc td te tf tg th ti dj cw tj tk tl").style.display = "none";',
+        'document.getElementByClassName("haAclf WsjYwc-haAclf").item(0).style.display = "none";',
+        'document.getElementByClassName("us s ut uu").item(0).style.display = "none";',
+        'document.getElementByClassName("s c").item(0).style.display = "none";',
+        'document.getElementByClassName("s ap x").item(0).style.display = "none";'
       ];
       jsCode.forEach((String js) {
         controller?.evaluateJavascript(source: js);
