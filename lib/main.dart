@@ -15,14 +15,26 @@ Future main() async {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
+      colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.grey,
+              primaryColorDark: Colors.grey[700],
+              accentColor: Colors.grey[700],
+              brightness: Brightness.dark,
+              backgroundColor: Colors.grey[900])
+          .copyWith(
+        secondary: Colors.green,
+      ),
+      textTheme: const TextTheme(bodyText2: TextStyle(color: Colors.purple)),
+    ),
+    /*theme: ThemeData(
       brightness: Brightness.dark,
-      primaryColor: Colors.grey[900],
+      primaryColor: Colors.grey[500],
       primarySwatch: Colors.grey,
       colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: Colors.grey[900],
+          primary: Colors.grey[500],
           secondary: Colors.black,
           background: Colors.black),
-    ),
+    ),*/
     home: HomeScreen(),
   ));
 }
@@ -48,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     DropdownChoices(title: 'Back', icon: Icons.arrow_back),
     DropdownChoices(title: 'Forward', icon: Icons.arrow_forward),
     DropdownChoices(title: 'Share', icon: Icons.share),
+    DropdownChoices(title: 'Source Code', icon: Icons.code),
   ];
 
   InAppWebViewController? webViewController;
@@ -290,6 +303,12 @@ class _HomeScreenState extends State<HomeScreen> {
       webViewController?.clearCache();
       webViewController
           ?.getUrl()
+          .then((value) => Share.share(value.toString()));
+    }
+
+    if (choice.title == "Source Code") {
+      webViewController
+          ?.getHtml()
           .then((value) => Share.share(value.toString()));
     }
   }
