@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -9,9 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  /*if (Platform.isAndroid) {
+  if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
-  }*/
+  }
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
@@ -26,15 +27,6 @@ Future main() async {
       ),
       textTheme: const TextTheme(bodyText2: TextStyle(color: Colors.purple)),
     ),
-    /*theme: ThemeData(
-      brightness: Brightness.dark,
-      primaryColor: Colors.grey[500],
-      primarySwatch: Colors.grey,
-      colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: Colors.grey[500],
-          secondary: Colors.black,
-          background: Colors.black),
-    ),*/
     home: HomeScreen(),
   ));
 }
@@ -259,25 +251,43 @@ class _HomeScreenState extends State<HomeScreen> {
         'document.getElementById("lo-highlight-meter-1-highlight-box").style.display = "none";',
         'document.getElementById("lo-highlight-meter-2-highlight-box").style.display = "none";',
         'document.getElementById("lo-highlight-meter-3-highlight-box").style.display = "none";',
-        'document.getElementsByClassName("branch-journeys-top").item(0).style.display = "none";',
+        'document.getElementsByClassName("branch-journeys-top")[0].style.display = "none";',
         'document.getElementById("cv cw cx cy aj cz da s").style.display = "none";',
-        'document.getElementsByClassName("mn u gs mo aj mp mq mr ms mt mu mv mw mx my mz na nb nc nd ne nf ng nh ni nj nk nl nm nn no np nq nr ns nt").item(0).style.display = "none";',
+        'document.getElementsByClassName("mn u gs mo aj mp mq mr ms mt mu mv mw mx my mz na nb nc nd ne nf ng nh ni nj nk nl nm nn no np nq nr ns nt")[0].style.display = "none";',
         'document.getElementById("animated-container").style.display = "none";',
-        'document.getElementsByClassName("ac ae af ag ah ai aj ak al").item(0).style.display = "none";',
+        'document.getElementsByClassName("ac ae af ag ah ai aj ak al")[0].style.display = "none";',
         'document.getElementById("credentials-picker-container").style.display = "none";',
-        'document.getElementsByClassName("ah ai ix iy af iz ja jb jc jd je jf jg jh ji jj jk jl jm jn jo jp jq jr js jt ju jv jw jx jy jz ka kb kc kd").item(0).style.display = "none";',
+        'document.getElementsByClassName("ah ai ix iy af iz ja jb jc jd je jf jg jh ji jj jk jl jm jn jo jp jq jr js jt ju jv jw jx jy jz ka kb kc kd")[0].style.display = "none";',
         'document.getElementById("lo-highlight-meter-1-link").style.display = "none";',
         'document.getElementById("lo-highlight-meter-2-link").style.display = "none";',
         'document.getElementById("lo-highlight-meter-3-link").style.display = "none";',
-        'document.getElementsByClassName("tv").item(0).click();',
-        'document.getElementsByClassName("bv bw bx by bz ca cb cc bb cd tw tx cg to tp").item(0).click();',
-        'document.getElementsByClassName("s hw u w").item(0).click();',
+        'document.getElementsByClassName("tv")[0].click();',
+        'document.getElementsByClassName("bv bw bx by bz ca cb cc bb cd tw tx cg to tp")[0].click();',
+        'document.getElementsByClassName("s hw u w")[0].click();',
         'document.getElementsById("close").click();',
         'document.getElementById("kx u kz sy sz ta tb tc td te tf tg th ti dj cw tj tk tl").style.display = "none";',
-        'document.getElementByClassName("haAclf WsjYwc-haAclf").item(0).style.display = "none";',
-        'document.getElementByClassName("us s ut uu").item(0).style.display = "none";',
-        'document.getElementByClassName("s c").item(0).style.display = "none";',
-        'document.getElementByClassName("s ap x").item(0).style.display = "none";'
+        'document.getElementsByClassName("haAclf WsjYwc-haAclf")[0].style.display = "none";',
+        'document.getElementsByClassName("us s ut uu")[0].style.display = "none";',
+        'document.getElementsByClassName("s c")[0].style.display = "none";',
+        'document.getElementsByClassName("s ap x")[0].style.display = "none";',
+        'document.getElementsByClassName("n cp ng nh")[0].style.display = "none";',
+        'document.getElementsByClassName("bf b gk bh nf")[0].style.display = "none";',
+        'document.getElementsByClassName("ea eb ce cf cg ch ci cj ck bq cl ni nj lf)[0].style.display = "none";',
+        'document.getElementsByClassName("bf b bg bh dx")[0].style.display = "none";',
+        'document.getElementById("lo-ShowPostUnderCollection-navbar-open-in-app-button").style.display = "none";',
+        'document.getElementsByClassName("bi bl ce cf cg ch ci cj ck bq bn bo cl lh li")[0].style.display = "none";',
+        'document.getElementsByClassName("wv ww wx wy wz xa n cp")[0].style.display = "none";',
+        'document.getElementsByClassName("aq xc xd xe cr")[0].style.display = "none";',
+        'document.getElementsByClassName("aq xg mb cr nh")[0].style.display = "none";',
+        'document.getElementsByClassName("xn xo xp xq sd xr zf")[0].style.display = "none";',
+        'document.getElementsByClassName("yz n o p")[0].style.display = "none";',
+        'document.getElementsByClassName("newsletter email_icon orange default")[0].style.display = "none";',
+        'document.getElementById("sliderbox").style.display = "none";',
+        'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data. By using Medium, you agree to our/g, "");',
+        'document.body.innerHTML = document.body.innerHTML.replace(/Privacy Policy,/g, "");',
+        'document.body.innerHTML = document.body.innerHTML.replace(/including cookie policy./g, "");',
+        'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data./g, "");',
+        'document.getElementsByClassName("ay az ba bb bc bd be bf bg bh jw jx bk jl jm").item(0).click();'
       ];
       jsCode.forEach((String js) {
         controller?.evaluateJavascript(source: js);
@@ -649,6 +659,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                   removeElements(controller);
                 },
+                onLoadStop: (controller, url) async {
+                  setState(() {
+                    removeElements(controller);
+                  });
+                },
                 onLoadStart: (controller, url) {
                   removeElements(controller);
                   controller.clearCache();
@@ -684,12 +699,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                   }
                   return NavigationActionPolicy.ALLOW;
-                },
-                onLoadStop: (controller, url) async {
-                  setState(() {
-                    this.url = url.toString();
-                    urlController.text = this.url;
-                  });
                 },
                 /*onLoadError: (controller, url, code, message) {
                     },*/
