@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+//import 'dart:io';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -10,9 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Platform.isAndroid) {
+  /*if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
-  }
+  }*/
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
@@ -43,8 +43,13 @@ class DropdownChoices {
   final IconData icon;
 }
 
+bool hybridComposition = true;
+
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey webViewKey = GlobalKey();
+
+  String urlDefault = "https://medium.com/tag/popular";
+  String url = "";
 
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -66,15 +71,14 @@ class _HomeScreenState extends State<HomeScreen> {
         clearCache: true,
       ),
       android: AndroidInAppWebViewOptions(
-          //useHybridComposition: true, //CRASH WHEN APP OPENED FROM INTENT IF USED WITH useHybridComposition
+          useHybridComposition:
+              hybridComposition, //CRASH WHEN APP OPENED FROM INTENT IF USED WITH useHybridComposition
           clearSessionCache: true,
           forceDark: AndroidForceDark.FORCE_DARK_ON),
       ios: IOSInAppWebViewOptions(
         allowsInlineMediaPlayback: true,
       ));
 
-  String urlDefault = "https://medium.com/topic/popular";
-  String url = "";
   double progress = 0;
   final urlController = TextEditingController();
 
@@ -214,8 +218,11 @@ class _HomeScreenState extends State<HomeScreen> {
       // For sharing or opening urls/text coming from outside the app while the app is in the memory
       _intentDataStreamSubscription =
           ReceiveSharingIntent.getTextStream().listen((String value) {
+        hybridComposition = false;
         if (value.toString().length > 5) {
           this.url = value;
+          webViewController!.loadUrl(
+              urlRequest: URLRequest(url: Uri.parse(value.toString())));
         }
       }, onError: (err) {
         print("getLinkStream error: $err");
@@ -223,8 +230,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // For sharing or opening urls/text coming from outside the app while the app is closed
       ReceiveSharingIntent.getInitialText().then((String? value) {
+        hybridComposition = false;
         if (value.toString().length > 5) {
           this.url = value.toString();
+          webViewController!.loadUrl(
+              urlRequest: URLRequest(url: Uri.parse(value.toString())));
         }
       });
     } catch (e) {
@@ -242,9 +252,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void removeElements(InAppWebViewController? controller) {
     try {
       List<String> jsCode = [
-        'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });',
-        'window.localStorage.clear();',
-        'sessionStorage.clear();',
         'document.getElementById("lo-highlight-meter-1-copy").style.display = "none";',
         'document.getElementById("lo-highlight-meter-2-copy").style.display = "none";',
         'document.getElementById("lo-highlight-meter-3-copy").style.display = "none";',
@@ -288,7 +295,10 @@ class _HomeScreenState extends State<HomeScreen> {
         'document.body.innerHTML = document.body.innerHTML.replace(/, including cookie policy./g, "");',
         'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data./g, "");',
         'document.getElementsByClassName("ay az ba bb bc bd be bf bg bh jw jx bk jl jm").item(0).click();',
-        'document.querySelector("ex ez hy lg lh li lj lk ll lm ln lo lp lq ga fp lr ls lt").style.cssText = `display: none;`'
+        'document.querySelector("ex ez hy lg lh li lj lk ll lm ln lo lp lq ga fp lr ls lt").style.cssText = `display: none;`',
+        'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });',
+        'window.localStorage.clear();',
+        'sessionStorage.clear();'
       ];
       jsCode.forEach((String js) {
         controller?.evaluateJavascript(source: js);
@@ -456,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   webViewController?.loadUrl(
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
-                                              "https://medium.com/topic/popular")));
+                                              "https://medium.com/tag/popular")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -470,7 +480,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   webViewController?.loadUrl(
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
-                                              "https://medium.com/topic/self")));
+                                              "https://medium.com/tag/self")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -484,7 +494,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   webViewController?.loadUrl(
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
-                                              "https://medium.com/topic/relationships")));
+                                              "https://medium.com/tag/relationships")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -498,7 +508,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   webViewController?.loadUrl(
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
-                                              "https://medium.com/topic/productivity")));
+                                              "https://medium.com/tag/productivity")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -512,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   webViewController?.loadUrl(
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
-                                              "https://medium.com/topic/health")));
+                                              "https://medium.com/tag/health")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -526,7 +536,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   webViewController?.loadUrl(
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
-                                              "https://medium.com/topic/programming")));
+                                              "https://medium.com/tag/programming")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -540,7 +550,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   webViewController?.loadUrl(
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
-                                              "https://medium.com/topic/science")));
+                                              "https://medium.com/tag/science")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -554,7 +564,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   webViewController?.loadUrl(
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
-                                              "https://medium.com/topic/society")));
+                                              "https://medium.com/tag/society")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -568,7 +578,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   webViewController?.loadUrl(
                                       urlRequest: URLRequest(
                                           url: Uri.parse(
-                                              "https://medium.com/topic/technology")));
+                                              "https://medium.com/tag/technology")));
                                   Navigator.pop(context);
                                 },
                               ),
@@ -704,7 +714,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 /*onLoadError: (controller, url, code, message) {
                     },*/
                 onProgressChanged: (controller, progress) {
-                  if (progress >= 50 && progress <= 70) {
+                  if (progress >= 80 && progress <= 95) {
                     if (webViewController != null) {
                       removeElements(webViewController);
                     }
