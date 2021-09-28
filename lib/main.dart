@@ -284,10 +284,11 @@ class _HomeScreenState extends State<HomeScreen> {
         'document.getElementsByClassName("newsletter email_icon orange default")[0].style.display = "none";',
         'document.getElementById("sliderbox").style.display = "none";',
         'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data. By using Medium, you agree to our/g, "");',
-        'document.body.innerHTML = document.body.innerHTML.replace(/Privacy Policy,/g, "");',
-        'document.body.innerHTML = document.body.innerHTML.replace(/including cookie policy./g, "");',
+        'document.body.innerHTML = document.body.innerHTML.replace(/Privacy Policy/g, "");',
+        'document.body.innerHTML = document.body.innerHTML.replace(/, including cookie policy./g, "");',
         'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data./g, "");',
-        'document.getElementsByClassName("ay az ba bb bc bd be bf bg bh jw jx bk jl jm").item(0).click();'
+        'document.getElementsByClassName("ay az ba bb bc bd be bf bg bh jw jx bk jl jm").item(0).click();',
+        'document.querySelector("ex ez hy lg lh li lj lk ll lm ln lo lp lq ga fp lr ls lt").style.cssText = `display: none;`'
       ];
       jsCode.forEach((String js) {
         controller?.evaluateJavascript(source: js);
@@ -703,9 +704,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 /*onLoadError: (controller, url, code, message) {
                     },*/
                 onProgressChanged: (controller, progress) {
-                  if (progress >= 60 && progress <= 70) {
+                  if (progress >= 70 && progress <= 90) {
                     if (webViewController != null) {
-                      removeElements(controller);
+                      removeElements(webViewController);
                     }
                   }
                   if (progress == 100) {
