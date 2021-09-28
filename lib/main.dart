@@ -704,7 +704,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 /*onLoadError: (controller, url, code, message) {
                     },*/
                 onProgressChanged: (controller, progress) {
-                  if (progress >= 70 && progress <= 90) {
+                  if (progress >= 50 && progress <= 70) {
                     if (webViewController != null) {
                       removeElements(webViewController);
                     }
