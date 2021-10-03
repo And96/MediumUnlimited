@@ -252,6 +252,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void removeElements(InAppWebViewController? controller) {
     try {
       List<String> jsCode = [
+        'document.querySelector(`[data-testid="close-button"]`).click();',
+        'document.querySelector(`[aria-label="Chiudi"]`).click();',
+        'document.querySelectorAll("div").forEach( el => {if (el.ariaLabel.toUpperCase().includes("CLOSE")){el.Click()}});',
+        'document.querySelectorAll("div").forEach( el => {if (el.ariaLabel.toUpperCase().includes("CHIUDI")){el.Click()}});',
+        'document.getElementById("top-nav-get-started-cta").style.display = "none";',
         'document.getElementById("lo-highlight-meter-1-copy").style.display = "none";',
         'document.getElementById("lo-highlight-meter-2-copy").style.display = "none";',
         'document.getElementById("lo-highlight-meter-3-copy").style.display = "none";',
