@@ -404,6 +404,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     contentPadding: EdgeInsets.only(left: 0.0, right: 0.0),
                     title: Text('Medium.com'),
                     onTap: () {
+                      FocusScope.of(context).unfocus();
                       webViewController?.stopLoading();
                       webViewController?.clearCache();
                       webViewController?.loadUrl(
@@ -476,6 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Popular'),
                                 onTap: () {
+                                  FocusScope.of(context).unfocus();
                                   webViewController?.stopLoading();
                                   webViewController?.clearCache();
                                   webViewController?.loadUrl(
@@ -483,6 +485,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           url: Uri.parse(
                                               "https://medium.com/tag/popular")));
                                   Navigator.pop(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
                                 },
                               ),
                               ListTile(
@@ -490,6 +493,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Self'),
                                 onTap: () {
+                                  FocusScope.of(context).unfocus();
                                   webViewController?.stopLoading();
                                   webViewController?.clearCache();
                                   webViewController?.loadUrl(
@@ -497,6 +501,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           url: Uri.parse(
                                               "https://medium.com/tag/self")));
                                   Navigator.pop(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
                                 },
                               ),
                               ListTile(
@@ -504,6 +509,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Relationships'),
                                 onTap: () {
+                                  FocusScope.of(context).unfocus();
                                   webViewController?.stopLoading();
                                   webViewController?.clearCache();
                                   webViewController?.loadUrl(
@@ -511,6 +517,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           url: Uri.parse(
                                               "https://medium.com/tag/relationships")));
                                   Navigator.pop(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
                                 },
                               ),
                               ListTile(
@@ -518,6 +525,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Productivity'),
                                 onTap: () {
+                                  FocusScope.of(context).unfocus();
                                   webViewController?.stopLoading();
                                   webViewController?.clearCache();
                                   webViewController?.loadUrl(
@@ -525,6 +533,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           url: Uri.parse(
                                               "https://medium.com/tag/productivity")));
                                   Navigator.pop(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
                                 },
                               ),
                               ListTile(
@@ -532,6 +541,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Health'),
                                 onTap: () {
+                                  FocusScope.of(context).unfocus();
                                   webViewController?.stopLoading();
                                   webViewController?.clearCache();
                                   webViewController?.loadUrl(
@@ -539,6 +549,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           url: Uri.parse(
                                               "https://medium.com/tag/health")));
                                   Navigator.pop(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
                                 },
                               ),
                               ListTile(
@@ -546,6 +557,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Programming'),
                                 onTap: () {
+                                  FocusScope.of(context).unfocus();
                                   webViewController?.stopLoading();
                                   webViewController?.clearCache();
                                   webViewController?.loadUrl(
@@ -553,6 +565,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           url: Uri.parse(
                                               "https://medium.com/tag/programming")));
                                   Navigator.pop(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
                                 },
                               ),
                               ListTile(
@@ -560,6 +573,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Science'),
                                 onTap: () {
+                                  FocusScope.of(context).unfocus();
                                   webViewController?.stopLoading();
                                   webViewController?.clearCache();
                                   webViewController?.loadUrl(
@@ -567,6 +581,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           url: Uri.parse(
                                               "https://medium.com/tag/science")));
                                   Navigator.pop(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
                                 },
                               ),
                               ListTile(
@@ -574,6 +589,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Society'),
                                 onTap: () {
+                                  FocusScope.of(context).unfocus();
                                   webViewController?.stopLoading();
                                   webViewController?.clearCache();
                                   webViewController?.loadUrl(
@@ -581,6 +597,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           url: Uri.parse(
                                               "https://medium.com/tag/society")));
                                   Navigator.pop(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
                                 },
                               ),
                               ListTile(
@@ -588,6 +605,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 trailing: Icon(Icons.keyboard_arrow_right),
                                 title: Text('Technology'),
                                 onTap: () {
+                                  FocusScope.of(context).unfocus();
                                   webViewController?.stopLoading();
                                   webViewController?.clearCache();
                                   webViewController?.loadUrl(
@@ -595,6 +613,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           url: Uri.parse(
                                               "https://medium.com/tag/technology")));
                                   Navigator.pop(context);
+                                  FocusManager.instance.primaryFocus!.unfocus();
                                 },
                               ),
                             ]),
@@ -634,6 +653,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         context, favouriteLinks!.elementAt(i));
                                   },
                                   onTap: () {
+                                    FocusScope.of(context).unfocus();
                                     webViewController?.stopLoading();
                                     webViewController?.clearCache();
                                     webViewController?.loadUrl(
@@ -641,6 +661,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             url: Uri.parse(
                                                 favouriteLinks!.elementAt(i))));
                                     Navigator.pop(context);
+                                    FocusManager.instance.primaryFocus!
+                                        .unfocus();
                                   },
                                 ),
                             ]),
@@ -661,6 +683,11 @@ class _HomeScreenState extends State<HomeScreen> {
             controller: urlController,
             keyboardType: TextInputType.url,
             onSubmitted: (value) {
+              if (!value.toString().toLowerCase().contains('http')) {
+                if (value.toString().contains('.')) {
+                  value = "https://" + value;
+                }
+              }
               var url = Uri.parse(value);
               if (url.scheme.isEmpty) {
                 url = Uri.parse(urlDefault);
@@ -729,7 +756,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 /*onLoadError: (controller, url, code, message) {
                     },*/
                 onProgressChanged: (controller, progress) {
-                  if (progress >= 80 && progress <= 95) {
+                  if (progress >= 95 && progress <= 97) {
                     if (webViewController != null) {
                       removeElements(webViewController);
                     }
