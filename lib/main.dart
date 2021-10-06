@@ -1,5 +1,8 @@
 import 'dart:async';
 //import 'dart:io';
+import 'package:flutter/services.dart';
+//import 'package:restart_app/restart_app.dart';
+//import 'dart:io';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -45,23 +48,8 @@ class DropdownChoices {
 
 bool hybridComposition = true;
 
-class _HomeScreenState extends State<HomeScreen> {
-  final GlobalKey webViewKey = GlobalKey();
-
-  String urlDefault = "https://medium.com/tag/popular";
-  String url = "";
-
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
-  List<DropdownChoices> dropdownChoices = <DropdownChoices>[
-    DropdownChoices(title: 'Back', icon: Icons.arrow_back),
-    DropdownChoices(title: 'Forward', icon: Icons.arrow_forward),
-    DropdownChoices(title: 'Share', icon: Icons.share),
-    DropdownChoices(title: 'Source Code', icon: Icons.code),
-  ];
-
-  InAppWebViewController? webViewController;
-  InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
+InAppWebViewGroupOptions getInAppWebViewGroupOptions() {
+  return InAppWebViewGroupOptions(
       crossPlatform: InAppWebViewOptions(
         javaScriptCanOpenWindowsAutomatically: false,
         useShouldOverrideUrlLoading: true,
@@ -78,6 +66,26 @@ class _HomeScreenState extends State<HomeScreen> {
       ios: IOSInAppWebViewOptions(
         allowsInlineMediaPlayback: true,
       ));
+}
+
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  final GlobalKey webViewKey = GlobalKey();
+
+  String urlDefault = "https://medium.com/tag/popular";
+  String url = "";
+  String urlLast = "";
+
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  List<DropdownChoices> dropdownChoices = <DropdownChoices>[
+    DropdownChoices(title: 'Back', icon: Icons.arrow_back),
+    DropdownChoices(title: 'Forward', icon: Icons.arrow_forward),
+    DropdownChoices(title: 'Share', icon: Icons.share),
+    DropdownChoices(title: 'Source Code', icon: Icons.code),
+  ];
+
+  InAppWebViewController? webViewController;
+  InAppWebViewGroupOptions options = getInAppWebViewGroupOptions();
 
   double progress = 0;
   final urlController = TextEditingController();
@@ -101,6 +109,12 @@ class _HomeScreenState extends State<HomeScreen> {
         favouriteLinks = [];
       });
     }
+  }
+
+  saveLastUrl() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('last_url', this.url.toString());
+    prefs.setString('last_date', DateTime.now().toString());
   }
 
   addFavouriteLinks(String value) async {
@@ -205,22 +219,60 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    print("Dispose");
+    super.dispose();
+    _intentDataStreamSubscription!.cancel();
+    WidgetsBinding.instance!.removeObserver(this);
+  }
+
+  @override
   void initState() {
     try {
       super.initState();
 
-      url = urlDefault;
+      WidgetsBinding.instance!.addObserver(this);
+      print("InitState");
 
       loadFavouriteLinks();
+
+      SharedPreferences.getInstance().then((prefValue) => {
+            setState(() {
+              String? prefLastUrl = prefValue.getString('last_url');
+              String? prefLastDate = prefValue.getString('last_date');
+
+              if (prefLastUrl != null) {
+                if (prefLastDate != null) {
+                  final currentTime = DateTime.now();
+                  final diffInMinutes = currentTime
+                      .difference(DateTime.parse(prefLastDate))
+                      .inMinutes
+                      .abs();
+                  if (diffInMinutes < 10) {
+                    setState(() {
+                      urlLast = prefLastUrl;
+                    });
+                  }
+                }
+              }
+
+              if (urlLast == "")
+                url = urlDefault;
+              else
+                url = urlLast;
+            })
+          });
 
       BackButtonInterceptor.add(myInterceptor);
 
       // For sharing or opening urls/text coming from outside the app while the app is in the memory
       _intentDataStreamSubscription =
           ReceiveSharingIntent.getTextStream().listen((String value) {
+        //Restart.restartApp();
         hybridComposition = false;
         if (value.toString().length > 5) {
           this.url = value;
+          webViewController!.setOptions(options: getInAppWebViewGroupOptions());
           webViewController!.loadUrl(
               urlRequest: URLRequest(url: Uri.parse(value.toString())));
         }
@@ -230,9 +282,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // For sharing or opening urls/text coming from outside the app while the app is closed
       ReceiveSharingIntent.getInitialText().then((String? value) {
+        //Restart.restartApp();
         hybridComposition = false;
         if (value.toString().length > 5) {
           this.url = value.toString();
+          webViewController!.setOptions(options: this.options);
           webViewController!.loadUrl(
               urlRequest: URLRequest(url: Uri.parse(value.toString())));
         }
@@ -243,10 +297,41 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  void dispose() {
-    BackButtonInterceptor.remove(myInterceptor);
-    _intentDataStreamSubscription?.cancel();
-    super.dispose();
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed: //--> crash not solved
+      /*hybridComposition = false;
+        webViewController!.setOptions(options: getInAppWebViewGroupOptions());
+        print("app in resumed");*/
+      /*  Restart.restartApp(); 
+        break;*/
+      case AppLifecycleState.inactive:
+        /* hybridComposition = false;
+        webViewController!.setOptions(options: getInAppWebViewGroupOptions());
+        print("app in inactive");*/
+        /* Restart.restartApp();
+        break;*/
+        SystemNavigator.pop();
+        break;
+      case AppLifecycleState.paused:
+        /* hybridComposition = false;
+        webViewController!.setOptions(options: getInAppWebViewGroupOptions());*/
+        print("app in paused");
+        //String urlPaused = this.url.toString();
+        //Restart.restartApp();
+        /*if (urlPaused.length > 5) {
+          webViewController!.setOptions(options: this.options);
+          webViewController!
+              .loadUrl(urlRequest: URLRequest(url: Uri.parse(urlPaused)));
+        }*/
+        break;
+      case AppLifecycleState.detached: //--> crash not solved
+      /*hybridComposition = false;
+        webViewController!.setOptions(options: getInAppWebViewGroupOptions());
+        print("app in detached");*/
+      /* Restart.restartApp();
+        break;*/
+    }
   }
 
   void removeElements(InAppWebViewController? controller) {
@@ -720,6 +805,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
                 onLoadStart: (controller, url) {
+                  saveLastUrl();
                   removeElements(controller);
                   controller.clearCache();
                   final cookieManager = CookieManager();
@@ -779,6 +865,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     this.url = url.toString();
                     urlController.text = this.url;
                   });
+                  saveLastUrl();
                 },
                 /*onConsoleMessage: (controller, consoleMessage) {
                       print(consoleMessage);
