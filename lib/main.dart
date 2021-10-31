@@ -430,8 +430,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
 
     if (choice.title == "Source Code") {
-      webViewController
-          ?.getHtml()
+      //webViewController
+      //?.getHtml()
+      webViewController!
+          .evaluateJavascript(
+              source:
+                  "window.document.getElementsByTagName('html')[0].outerHTML;")
           .then((value) => Share.share(value.toString()));
     }
   }
