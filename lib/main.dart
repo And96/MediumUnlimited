@@ -1,3 +1,5 @@
+// ignore_for_file: cancel_subscriptions
+
 import 'dart:async';
 //import 'dart:io';
 import 'package:flutter/services.dart';
