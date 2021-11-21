@@ -253,6 +253,20 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
+    version: "2.0.9"
+  shared_preferences_android:
+    dependency: transitive
+    description:
+      name: shared_preferences_android
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.8"
+  shared_preferences_ios:
+    dependency: transitive
+    description:
+      name: shared_preferences_ios
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "2.0.8"
   shared_preferences_linux:
     dependency: transitive
@@ -349,7 +363,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.13"
+    version: "6.0.15"
   url_launcher_linux:
     dependency: transitive
     description:
