@@ -398,6 +398,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data./g, "");',
         //'document.getElementsByClassName("ay az ba bb bc bd be bf bg bh jw jx bk jl jm").item(0).click();',
         //'document.querySelector("ex ez hy lg lh li lj lk ll lm ln lo lp lq ga fp lr ls lt").style.cssText = `display: none;`',
+        'document.getElementsByClassName("tp-backdrop tp-active")[0].style.display = "none";', //corriere
+        'document.getElementsByClassName("tp-modal wall-modal fullWide")[0].style.display = "none";', //corriere
         'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });',
         'window.localStorage.clear();',
         'sessionStorage.clear();'
