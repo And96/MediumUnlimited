@@ -403,7 +403,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         // 'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });',
         // 'window.localStorage.clear();',
         // 'sessionStorage.clear();'
-        'if (!window.location.href.includes("12ft"))  window.location.replace("https://12ft.io/" + window.location.href); '
+        'if ((!window.location.href.includes("12ft")) && (!window.location.href.includes("@"))) { window.location.replace("https://12ft.io/" + window.location.href)}; '
+            'if (window.location.href.includes("12ft") && window.location.href.includes("@")) { window.location.replace(window.location.href.replace("https://12ft.io/proxy?ref=&q=", "").replace("https://12ft.io/proxy?q=", "").replace("https://12ft.io/", "").replace("12ft.io/", ""))}; '
       ];
       jsCode.forEach((String js) {
         controller?.evaluateJavascript(source: js);
@@ -806,11 +807,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     webViewController?.loadUrl(
                         urlRequest: URLRequest(url: address));
                   }
-                  removeElements(controller);
+                  //removeElements(controller);
                 },
                 onLoadStop: (controller, url) async {
                   setState(() {
-                    removeElements(controller);
+                    // removeElements(controller);
                   });
                 },
                 onLoadStart: (controller, url) {
@@ -853,12 +854,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 /*onLoadError: (controller, url, code, message) {
                     },*/
                 onProgressChanged: (controller, progress) {
-                  if (progress >= 95 && progress <= 97) {
+                  /*  if (progress >= 95 && progress <= 97) {
                     if (webViewController != null) {
                       removeElements(webViewController);
                     }
-                  }
-                  if (progress == 100) {
+                  }*/
+                  /* if (progress == 100) {
+                    if (webViewController != null) {
+                      removeElements(controller);
+                      controller.clearCache();
+                    }
+                  }*/
+                  if (progress == 30) {
                     if (webViewController != null) {
                       removeElements(controller);
                       controller.clearCache();
