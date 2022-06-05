@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     print("Dispose");
     super.dispose();
     _intentDataStreamSubscription!.cancel();
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override
@@ -233,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     try {
       super.initState();
 
-      WidgetsBinding.instance!.addObserver(this);
+      WidgetsBinding.instance.addObserver(this);
       print("InitState");
 
       loadFavouriteLinks();
@@ -339,70 +339,71 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void removeElements(InAppWebViewController? controller) {
     try {
       List<String> jsCode = [
-        'document.querySelector(`[data-testid="close-button"]`).click();',
-        'document.querySelector(`[aria-label="Chiudi"]`).click();',
-        'document.querySelectorAll("div").forEach( el => {if (el.ariaLabel.toUpperCase().includes("CLOSE")){el.Click()}});',
-        'document.querySelectorAll("div").forEach( el => {if (el.ariaLabel.toUpperCase().includes("CHIUDI")){el.Click()}});',
-        'document.getElementById("header-lohp-header-start-writing-button").style.display = "none";',
-        'document.getElementById("top-nav-our-story-cta-desktop").style.display = "none";',
-        'document.getElementById("top-nav-membership-cta-desktop").style.display = "none";',
-        'document.getElementById("top-nav-write-cta-desktop").style.display = "none";',
-        'document.getElementById("top-nav-sign-in-cta-desktop").style.display = "none";',
-        'document.getElementById("top-nav-logo").style.display = "none";',
-        'document.getElementById("header-background-color").style.display = "none";',
-        'document.getElementById("lo-meta-header-sign-up-button").style.display = "none";',
-        'document.getElementById("lo-meta-header-sign-in-link").style.display = "none";',
-        'document.getElementById("header-background-color").style.display = "none";',
-        'document.getElementById("top-nav-get-started-cta").style.display = "none";',
-        'document.getElementById("lo-highlight-meter-1-copy").style.display = "none";',
-        'document.getElementById("lo-highlight-meter-2-copy").style.display = "none";',
-        'document.getElementById("lo-highlight-meter-3-copy").style.display = "none";',
-        'document.getElementById("lo-highlight-meter-1-highlight-box").style.display = "none";',
-        'document.getElementById("lo-highlight-meter-2-highlight-box").style.display = "none";',
-        'document.getElementById("lo-highlight-meter-3-highlight-box").style.display = "none";',
-        'document.getElementsByClassName("branch-journeys-top")[0].style.display = "none";',
-        //'document.getElementById("cv cw cx cy aj cz da s").style.display = "none";',
-        //'document.getElementsByClassName("mn u gs mo aj mp mq mr ms mt mu mv mw mx my mz na nb nc nd ne nf ng nh ni nj nk nl nm nn no np nq nr ns nt")[0].style.display = "none";',
-        'document.getElementById("animated-container").style.display = "none";',
-        //'document.getElementsByClassName("ac ae af ag ah ai aj ak al")[0].style.display = "none";',
-        'document.getElementById("credentials-picker-container").style.display = "none";',
-        //'document.getElementsByClassName("ah ai ix iy af iz ja jb jc jd je jf jg jh ji jj jk jl jm jn jo jp jq jr js jt ju jv jw jx jy jz ka kb kc kd")[0].style.display = "none";',
-        'document.getElementById("lo-highlight-meter-1-link").style.display = "none";',
-        'document.getElementById("lo-highlight-meter-2-link").style.display = "none";',
-        'document.getElementById("lo-highlight-meter-3-link").style.display = "none";',
-        'document.getElementsByClassName("tv")[0].click();',
-        //'document.getElementsByClassName("bv bw bx by bz ca cb cc bb cd tw tx cg to tp")[0].click();',
-        //'document.getElementsByClassName("s hw u w")[0].click();',
-        'document.getElementsById("close").click();',
-        //'document.getElementById("kx u kz sy sz ta tb tc td te tf tg th ti dj cw tj tk tl").style.display = "none";',
-        //'document.getElementsByClassName("haAclf WsjYwc-haAclf")[0].style.display = "none";',
-        //'document.getElementsByClassName("us s ut uu")[0].style.display = "none";',
-        //'document.getElementsByClassName("s c")[0].style.display = "none";',
-        //'document.getElementsByClassName("s ap x")[0].style.display = "none";',
-        //'document.getElementsByClassName("n cp ng nh")[0].style.display = "none";',
-        //'document.getElementsByClassName("bf b gk bh nf")[0].style.display = "none";',
-        //'document.getElementsByClassName("ea eb ce cf cg ch ci cj ck bq cl ni nj lf)[0].style.display = "none";',
-        //'document.getElementsByClassName("bf b bg bh dx")[0].style.display = "none";',
-        'document.getElementById("lo-ShowPostUnderCollection-navbar-open-in-app-button").style.display = "none";',
-        //'document.getElementsByClassName("bi bl ce cf cg ch ci cj ck bq bn bo cl lh li")[0].style.display = "none";',
-        //'document.getElementsByClassName("wv ww wx wy wz xa n cp")[0].style.display = "none";',
-        //'document.getElementsByClassName("aq xc xd xe cr")[0].style.display = "none";',
-        //'document.getElementsByClassName("aq xg mb cr nh")[0].style.display = "none";',
-        //'document.getElementsByClassName("xn xo xp xq sd xr zf")[0].style.display = "none";',
-        //'document.getElementsByClassName("yz n o p")[0].style.display = "none";',
-        'document.getElementsByClassName("newsletter email_icon orange default")[0].style.display = "none";',
-        'document.getElementById("sliderbox").style.display = "none";',
-        'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data. By using Medium, you agree to our/g, "");',
-        'document.body.innerHTML = document.body.innerHTML.replace(/Privacy Policy/g, "");',
-        'document.body.innerHTML = document.body.innerHTML.replace(/, including cookie policy./g, "");',
-        'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data./g, "");',
-        //'document.getElementsByClassName("ay az ba bb bc bd be bf bg bh jw jx bk jl jm").item(0).click();',
-        //'document.querySelector("ex ez hy lg lh li lj lk ll lm ln lo lp lq ga fp lr ls lt").style.cssText = `display: none;`',
-        'document.getElementsByClassName("tp-backdrop tp-active")[0].style.display = "none";', //corriere
-        'document.getElementsByClassName("tp-modal wall-modal fullWide")[0].style.display = "none";', //corriere
-        'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });',
-        'window.localStorage.clear();',
-        'sessionStorage.clear();'
+        //'document.querySelector(`[data-testid="close-button"]`).click();',
+        // 'document.querySelector(`[aria-label="Chiudi"]`).click();',
+        // 'document.querySelectorAll("div").forEach( el => {if (el.ariaLabel.toUpperCase().includes("CLOSE")){el.Click()}});',
+        // 'document.querySelectorAll("div").forEach( el => {if (el.ariaLabel.toUpperCase().includes("CHIUDI")){el.Click()}});',
+        // 'document.getElementById("header-lohp-header-start-writing-button").style.display = "none";',
+        // 'document.getElementById("top-nav-our-story-cta-desktop").style.display = "none";',
+        // 'document.getElementById("top-nav-membership-cta-desktop").style.display = "none";',
+        // 'document.getElementById("top-nav-write-cta-desktop").style.display = "none";',
+        // 'document.getElementById("top-nav-sign-in-cta-desktop").style.display = "none";',
+        // 'document.getElementById("top-nav-logo").style.display = "none";',
+        // 'document.getElementById("header-background-color").style.display = "none";',
+        // 'document.getElementById("lo-meta-header-sign-up-button").style.display = "none";',
+        // 'document.getElementById("lo-meta-header-sign-in-link").style.display = "none";',
+        // 'document.getElementById("header-background-color").style.display = "none";',
+        // 'document.getElementById("top-nav-get-started-cta").style.display = "none";',
+        // 'document.getElementById("lo-highlight-meter-1-copy").style.display = "none";',
+        // 'document.getElementById("lo-highlight-meter-2-copy").style.display = "none";',
+        // 'document.getElementById("lo-highlight-meter-3-copy").style.display = "none";',
+        // 'document.getElementById("lo-highlight-meter-1-highlight-box").style.display = "none";',
+        // 'document.getElementById("lo-highlight-meter-2-highlight-box").style.display = "none";',
+        // 'document.getElementById("lo-highlight-meter-3-highlight-box").style.display = "none";',
+        // 'document.getElementsByClassName("branch-journeys-top")[0].style.display = "none";',
+        // //'document.getElementById("cv cw cx cy aj cz da s").style.display = "none";',
+        // //'document.getElementsByClassName("mn u gs mo aj mp mq mr ms mt mu mv mw mx my mz na nb nc nd ne nf ng nh ni nj nk nl nm nn no np nq nr ns nt")[0].style.display = "none";',
+        // 'document.getElementById("animated-container").style.display = "none";',
+        // //'document.getElementsByClassName("ac ae af ag ah ai aj ak al")[0].style.display = "none";',
+        // 'document.getElementById("credentials-picker-container").style.display = "none";',
+        // //'document.getElementsByClassName("ah ai ix iy af iz ja jb jc jd je jf jg jh ji jj jk jl jm jn jo jp jq jr js jt ju jv jw jx jy jz ka kb kc kd")[0].style.display = "none";',
+        // 'document.getElementById("lo-highlight-meter-1-link").style.display = "none";',
+        // 'document.getElementById("lo-highlight-meter-2-link").style.display = "none";',
+        // 'document.getElementById("lo-highlight-meter-3-link").style.display = "none";',
+        // 'document.getElementsByClassName("tv")[0].click();',
+        // //'document.getElementsByClassName("bv bw bx by bz ca cb cc bb cd tw tx cg to tp")[0].click();',
+        // //'document.getElementsByClassName("s hw u w")[0].click();',
+        // 'document.getElementsById("close").click();',
+        // //'document.getElementById("kx u kz sy sz ta tb tc td te tf tg th ti dj cw tj tk tl").style.display = "none";',
+        // //'document.getElementsByClassName("haAclf WsjYwc-haAclf")[0].style.display = "none";',
+        // //'document.getElementsByClassName("us s ut uu")[0].style.display = "none";',
+        // //'document.getElementsByClassName("s c")[0].style.display = "none";',
+        // //'document.getElementsByClassName("s ap x")[0].style.display = "none";',
+        // //'document.getElementsByClassName("n cp ng nh")[0].style.display = "none";',
+        // //'document.getElementsByClassName("bf b gk bh nf")[0].style.display = "none";',
+        // //'document.getElementsByClassName("ea eb ce cf cg ch ci cj ck bq cl ni nj lf)[0].style.display = "none";',
+        // //'document.getElementsByClassName("bf b bg bh dx")[0].style.display = "none";',
+        // 'document.getElementById("lo-ShowPostUnderCollection-navbar-open-in-app-button").style.display = "none";',
+        // //'document.getElementsByClassName("bi bl ce cf cg ch ci cj ck bq bn bo cl lh li")[0].style.display = "none";',
+        // //'document.getElementsByClassName("wv ww wx wy wz xa n cp")[0].style.display = "none";',
+        // //'document.getElementsByClassName("aq xc xd xe cr")[0].style.display = "none";',
+        // //'document.getElementsByClassName("aq xg mb cr nh")[0].style.display = "none";',
+        // //'document.getElementsByClassName("xn xo xp xq sd xr zf")[0].style.display = "none";',
+        // //'document.getElementsByClassName("yz n o p")[0].style.display = "none";',
+        // 'document.getElementsByClassName("newsletter email_icon orange default")[0].style.display = "none";',
+        // 'document.getElementById("sliderbox").style.display = "none";',
+        // 'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data. By using Medium, you agree to our/g, "");',
+        // 'document.body.innerHTML = document.body.innerHTML.replace(/Privacy Policy/g, "");',
+        // 'document.body.innerHTML = document.body.innerHTML.replace(/, including cookie policy./g, "");',
+        // 'document.body.innerHTML = document.body.innerHTML.replace(/To make Medium work, we log user data./g, "");',
+        // //'document.getElementsByClassName("ay az ba bb bc bd be bf bg bh jw jx bk jl jm").item(0).click();',
+        // //'document.querySelector("ex ez hy lg lh li lj lk ll lm ln lo lp lq ga fp lr ls lt").style.cssText = `display: none;`',
+        // 'document.getElementsByClassName("tp-backdrop tp-active")[0].style.display = "none";', //corriere
+        // 'document.getElementsByClassName("tp-modal wall-modal fullWide")[0].style.display = "none";', //corriere
+        // 'document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });',
+        // 'window.localStorage.clear();',
+        // 'sessionStorage.clear();'
+        'if (!window.location.href.includes("12ft"))  window.location.replace("https://12ft.io/" + window.location.href); '
       ];
       jsCode.forEach((String js) {
         controller?.evaluateJavascript(source: js);
