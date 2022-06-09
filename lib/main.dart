@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future main() async {
@@ -277,6 +277,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           webViewController!.setOptions(options: getInAppWebViewGroupOptions());
           webViewController!.loadUrl(
               urlRequest: URLRequest(url: Uri.parse(value.toString())));
+          removeElements(webViewController);
         }
       }, onError: (err) {
         print("getLinkStream error: $err");
@@ -807,11 +808,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     webViewController?.loadUrl(
                         urlRequest: URLRequest(url: address));
                   }
-                  //removeElements(controller);
+                  removeElements(controller);
                 },
                 onLoadStop: (controller, url) async {
                   setState(() {
-                    // removeElements(controller);
+                    removeElements(controller);
                   });
                 },
                 onLoadStart: (controller, url) {
@@ -865,7 +866,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       controller.clearCache();
                     }
                   }*/
-                  if (progress == 30) {
+                  if (progress >= 80 && progress <= 95) {
                     if (webViewController != null) {
                       removeElements(controller);
                       controller.clearCache();
